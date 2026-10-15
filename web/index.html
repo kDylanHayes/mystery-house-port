@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mystery House</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #000; color: #fff; overflow: hidden; }
+  /* the game draws into this canvas and scales its 280 x 192 screen to fit */
+  #mystery-house { display: block; width: 100vw; height: 100vh; outline: none; }
+  #status { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
+            font: 16px ui-monospace, Menlo, Consolas, monospace; pointer-events: none; }
+</style>
+</head>
+<body>
+<canvas id="mystery-house" tabindex="0"></canvas>
+<div id="status">Loading Mystery House...</div>
+<noscript>Mystery House needs JavaScript and WebAssembly.</noscript>
+<script type="module">
+  import init from './mystery-house.js';
+  const status = document.getElementById('status');
+  const canvas = document.getElementById('mystery-house');
+  // keys go to the canvas: focus it now and whenever the page is clicked
+  addEventListener('pointerdown', () => canvas.focus());
+  init().then(() => { status.remove(); canvas.focus(); }, (e) => {
+    // winit leaves its event loop by throwing; anything else is a real failure
+    if (String(e).includes('Using exceptions for control flow')) { status.remove(); canvas.focus(); return; }
+    status.textContent = 'Mystery House could not start: ' + e;
+  });
+</script>
+</body>
+</html>

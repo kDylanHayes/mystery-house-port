@@ -1,4 +1,5 @@
-# Builds the game for macOS (one app for Apple silicon and Intel), Windows and Linux. Pushing a
+# Builds the game for macOS (one app for Apple silicon and Intel), Windows, Linux and web pages
+# (a static folder for any web server). Pushing a
 # tag v* publishes them as a GitHub release; running the workflow by hand builds and collects
 # them without publishing (the packages are kept as the run's artifacts).
 name: release
@@ -84,8 +85,35 @@ jobs:
             mystery-house-*.tar.gz
           if-no-files-found: error
 
+  web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+
+      - name: wasm-bindgen-cli at the version in Cargo.lock
+        run: |
+          v=$(grep -A1 'name = "wasm-bindgen"$' Cargo.lock | sed -n 's/version = "\(.*\)"/\1/p')
+          cargo install wasm-bindgen-cli --version "$v" --locked
+
+      - name: Package for web pages
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then v="${GITHUB_REF#refs/tags/}"; else v="dev-${GITHUB_SHA::7}"; fi
+          tools/build-web.sh "dist/mystery-house-web"
+          cp README.md LICENSE dist/mystery-house-web/
+          (cd dist && zip -qr "../mystery-house-$v-web.zip" mystery-house-web)
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: web
+          path: mystery-house-*-web.zip
+          if-no-files-found: error
+
   publish:
-    needs: build
+    needs: [build, web]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v8
@@ -93,10 +121,10 @@ jobs:
           path: packages
           merge-multiple: true
 
-      - name: The three packages
-        run: ls -l packages && test "$(ls packages | wc -l)" -eq 3
+      - name: The four packages
+        run: ls -l packages && test "$(ls packages | wc -l)" -eq 4
 
-      - name: The release, with the three packages
+      - name: The release, with the four packages
         if: startsWith(github.ref, 'refs/tags/v')
         env:
           GH_TOKEN: ${{ github.token }}
@@ -112,6 +140,8 @@ jobs:
           - **Windows**: unzip and run `mystery-house.exe`. It is not signed, so SmartScreen may
             ask first: More info, then Run anyway.
           - **Linux** (x86-64, X11 or Wayland): untar and run `./mystery-house`.
+          - **Web pages**: unzip and copy the `mystery-house-web` folder to your web server;
+            the game plays at that folder's `index.html` (or embed it with an `<iframe>`).
 
           The README in each package lists the keys and options.
           EOF

@@ -1,8 +1,7 @@
 //! The player's settings: kept in `settings.txt` next to the save files, changed from the
 //! command line or the keyboard.
 
-use std::fs;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 
 use crate::render::{Aspect, Colour};
 
@@ -19,7 +18,7 @@ pub const USAGE: &str = "usage: mystery-house [options]
   --dir PATH                 keep saves and settings in PATH
 
 Keys: F1 instructions, F2 colour, F3 4:3, F11 or Alt+Return full screen,
-Cmd/Ctrl+1-9 save slot, Up/Down earlier commands, Esc clears the line.
+Cmd/Ctrl/Alt+1-9 save slot, Up/Down earlier commands, Esc clears the line.
 Saves are the original's SAVED GAME files, one per slot.";
 
 /// Where the game starts.
@@ -56,21 +55,13 @@ impl Default for Settings {
     }
 }
 
-/// Where saves and settings live: the platform's data directory.
-pub fn default_dir() -> PathBuf {
-    dirs::data_dir()
-        .unwrap_or_else(|| PathBuf::from("."))
-        .join("Mystery House")
-}
-
 impl Settings {
-    pub fn load(dir: &Path) -> Settings {
+    /// The settings in `settings.txt`'s text (`key = value` lines); unknown keys are skipped.
+    pub fn from_text(text: &str) -> Settings {
         let mut s = Settings::default();
-        if let Ok(text) = fs::read_to_string(dir.join("settings.txt")) {
-            for line in text.lines() {
-                if let Some((k, v)) = line.split_once('=') {
-                    s.set(k.trim(), v.trim());
-                }
+        for line in text.lines() {
+            if let Some((k, v)) = line.split_once('=') {
+                s.set(k.trim(), v.trim());
             }
         }
         s
@@ -115,9 +106,9 @@ impl Settings {
         }
     }
 
-    pub fn save(&self, dir: &Path) -> std::io::Result<()> {
+    pub fn to_text(&self) -> String {
         let onoff = |b: bool| if b { "on" } else { "off" };
-        let text = format!(
+        format!(
             "start = {}\nbugfix = {}\ncolour = {}\naspect = {}\nfullscreen = {}\nslot = {}\n",
             match self.begin {
                 Begin::Boot => "boot",
@@ -137,9 +128,7 @@ impl Settings {
             },
             onoff(self.fullscreen),
             self.slot
-        );
-        fs::create_dir_all(dir)?;
-        fs::write(dir.join("settings.txt"), text)
+        )
     }
 
     /// Apply command-line options; `--dir` is returned. Err is a message for the player.
@@ -180,15 +169,12 @@ mod tests {
 
     #[test]
     fn settings_survive_a_round_trip() {
-        let dir = std::env::temp_dir().join(format!("mh-settings-{}", std::process::id()));
         let mut s = Settings::default();
         let args: Vec<String> = ["--skip-loader", "--colour", "--4:3", "--slot", "3"]
             .map(String::from)
             .into();
         assert_eq!(s.apply_args(&args), Ok(None));
-        s.save(&dir).unwrap();
-        assert_eq!(Settings::load(&dir), s);
-        fs::remove_dir_all(dir).unwrap();
+        assert_eq!(Settings::from_text(&s.to_text()), s);
         assert!(s.apply_args(&["--slot".into(), "12".into()]).is_err());
     }
 }

@@ -27,6 +27,7 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: clippy, rustfmt
+          targets: ${{ runner.os == 'Linux' && 'wasm32-unknown-unknown' || '' }}
 
       - name: Format
         if: runner.os == 'Linux'
@@ -34,6 +35,10 @@ jobs:
 
       - name: Lint
         run: cargo clippy --all-targets -- -D warnings
+
+      - name: Lint the web build
+        if: runner.os == 'Linux'
+        run: cargo clippy -p mystery-house-app --target wasm32-unknown-unknown -- -D warnings
 
       - name: Every script in decomp/play/ gives the expected transcript and pixel hashes
         run: cargo test

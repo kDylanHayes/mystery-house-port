@@ -7,24 +7,25 @@ mod boot;
 mod font;
 mod render;
 mod settings;
+mod store;
 mod text;
 
-use std::path::PathBuf;
 use std::sync::Arc;
-use std::time::{Duration, Instant};
+
+use web_time::{Duration, Instant};
 
 use mystery_house::{savefile, Display, Game, GameData, Options, Output, Prompt, Start};
 use pixels::{Pixels, SurfaceTexture};
 use winit::application::ApplicationHandler;
-use winit::dpi::LogicalSize;
 use winit::event::{ElementState, KeyEvent, StartCause, WindowEvent};
-use winit::event_loop::{ActiveEventLoop, ControlFlow, EventLoop};
+use winit::event_loop::{ActiveEventLoop, ControlFlow, EventLoop, EventLoopProxy};
 use winit::keyboard::{Key, ModifiersState, NamedKey};
 use winit::window::{Fullscreen, Window, WindowId};
 
 use boot::BootPlayer;
 use render::{Aspect, Colour, Rgb, View};
 use settings::{Begin, Settings};
+use store::{warn, Store};
 use text::{LineEditor, TextPage};
 
 /// How long the 1980 title stays up as the game starts (any key skips it).
@@ -32,11 +33,19 @@ const TITLE_TIME: Duration = Duration::from_secs(2);
 /// The cursor flashes at this half-period.
 const BLINK: Duration = Duration::from_millis(400);
 
+/// Sent to the event loop: in a web page the GPU is set up asynchronously.
+#[cfg_attr(not(target_arch = "wasm32"), allow(dead_code))]
+enum UserEvent {
+    Pixels(Pixels<'static>),
+}
+
 struct App {
     data: &'static GameData,
     game: Game<'static>,
     settings: Settings,
-    dir: PathBuf,
+    store: Store,
+    /// For the GPU set up asynchronously in a web page (None in the tests).
+    proxy: Option<EventLoopProxy<UserEvent>>,
     /// The text page as the game has printed it.
     page: TextPage,
     editor: LineEditor,
@@ -54,7 +63,12 @@ struct App {
 }
 
 impl App {
-    fn new(data: &'static GameData, settings: Settings, dir: PathBuf) -> App {
+    fn new(
+        data: &'static GameData,
+        settings: Settings,
+        store: Store,
+        proxy: Option<EventLoopProxy<UserEvent>>,
+    ) -> App {
         let start = match settings.begin {
             Begin::Boot | Begin::Loader => Start::Loader,
             Begin::Game => Start::Game,
@@ -71,7 +85,8 @@ impl App {
             data,
             game,
             settings,
-            dir,
+            store,
+            proxy,
             page: TextPage::default(),
             editor: LineEditor::new(),
             instructions: None,
@@ -89,6 +104,24 @@ impl App {
             app.pump();
         }
         app
+    }
+
+    /// A new game, as the program starts (in a web page, where there is no quitting).
+    #[cfg_attr(not(target_arch = "wasm32"), allow(dead_code))]
+    fn restart(&mut self) {
+        let fresh = App::new(
+            self.data,
+            self.settings.clone(),
+            self.store.clone(),
+            self.proxy.clone(),
+        );
+        self.game = fresh.game;
+        self.page = fresh.page;
+        self.editor = fresh.editor;
+        self.boot = fresh.boot;
+        self.saves_seen = fresh.saves_seen;
+        self.title_until = None;
+        self.instructions = None;
     }
 
     /// Play the boot timeline up to now; when it reaches the loader, the loader takes over
@@ -121,29 +154,32 @@ impl App {
         self.tick_boot();
     }
 
-    fn slot_path(&self) -> PathBuf {
-        self.dir.join(format!("SAVED GAME {}", self.settings.slot))
+    fn slot_name(&self) -> String {
+        format!("SAVED GAME {}", self.settings.slot)
     }
 
     /// Put the slot's save file in the game's save file; an empty slot holds the disk's.
     fn load_slot(&mut self) {
-        let state = match std::fs::read(self.slot_path()) {
-            Ok(file) => savefile::read(self.data, &file).unwrap_or_else(|e| {
-                eprintln!(
+        let state = match self.store.read(&self.slot_name()) {
+            Some(file) => savefile::read(self.data, &file).unwrap_or_else(|e| {
+                warn(&format!(
                     "{}: {e}; the slot starts with the disk's saved game",
-                    self.slot_path().display()
-                );
+                    self.slot_name()
+                ));
                 self.game.disk_saved_game_state()
             }),
-            Err(_) => self.game.disk_saved_game_state(),
+            None => self.game.disk_saved_game_state(),
         };
         self.game.set_saved_game(state);
         self.saves_seen = self.game.saves();
     }
 
     fn save_settings(&self) {
-        if let Err(e) = self.settings.save(&self.dir) {
-            eprintln!("{}: {e}", self.dir.display());
+        if let Err(e) = self
+            .store
+            .write("settings.txt", self.settings.to_text().as_bytes())
+        {
+            warn(&e);
         }
     }
 
@@ -161,10 +197,8 @@ impl App {
         if self.game.saves() != self.saves_seen {
             self.saves_seen = self.game.saves();
             let file = savefile::write(self.data, self.game.saved_game());
-            let written = std::fs::create_dir_all(&self.dir)
-                .and_then(|_| std::fs::write(self.slot_path(), file));
-            if let Err(e) = written {
-                eprintln!("{}: {e}", self.slot_path().display());
+            if let Err(e) = self.store.write(&self.slot_name(), &file) {
+                warn(&e);
             }
         }
         self.editor.start(&self.page);
@@ -181,11 +215,13 @@ impl App {
     fn update_window(&self) {
         if let Some(w) = &self.window {
             w.set_title(&self.title());
-            w.set_fullscreen(
-                self.settings
-                    .fullscreen
-                    .then_some(Fullscreen::Borderless(None)),
-            );
+            if w.fullscreen().is_some() != self.settings.fullscreen {
+                w.set_fullscreen(
+                    self.settings
+                        .fullscreen
+                        .then_some(Fullscreen::Borderless(None)),
+                );
+            }
         }
     }
 
@@ -245,7 +281,7 @@ impl App {
             self.settings.aspect,
         );
         if let Err(e) = p.render() {
-            eprintln!("render: {e}");
+            warn(&format!("render: {e}"));
         }
     }
 
@@ -255,7 +291,8 @@ impl App {
             return;
         }
         let m = self.modifiers;
-        let command = m.super_key() || m.control_key();
+        // Alt too: a browser keeps Cmd/Ctrl+1-9 for its tabs
+        let command = m.super_key() || m.control_key() || m.alt_key();
         match &event.logical_key {
             Key::Named(NamedKey::F1) => {
                 self.instructions = if self.instructions.is_some() {
@@ -316,7 +353,11 @@ impl App {
             return;
         }
         let Some(prompt) = self.game.waiting() else {
+            // the game is over: a key quits, or in a web page starts again
+            #[cfg(not(target_arch = "wasm32"))]
             el.exit();
+            #[cfg(target_arch = "wasm32")]
+            self.restart();
             return;
         };
         match &event.logical_key {
@@ -335,11 +376,10 @@ impl App {
             Key::Named(NamedKey::ArrowUp) => self.editor.browse(true),
             Key::Named(NamedKey::ArrowDown) => self.editor.browse(false),
             Key::Named(NamedKey::Escape) => self.editor.clear(),
-            _ => {
-                if let Some(t) = &event.text {
-                    self.editor.insert(t);
-                }
-            }
+            // what the key types: winit's text, or in a web page (which gives none) the key
+            Key::Character(c) => self.editor.insert(event.text.as_deref().unwrap_or(c)),
+            Key::Named(NamedKey::Space) => self.editor.insert(" "),
+            _ => {}
         }
     }
 
@@ -350,25 +390,90 @@ impl App {
     }
 }
 
-impl ApplicationHandler for App {
+impl ApplicationHandler<UserEvent> for App {
     fn resumed(&mut self, el: &ActiveEventLoop) {
         if self.window.is_some() {
             return;
         }
-        let attrs = Window::default_attributes()
-            .with_title(self.title())
-            .with_inner_size(LogicalSize::new(
+        let attrs = Window::default_attributes().with_title(self.title());
+        // A window opens at 3x; in a web page the page's CSS sizes the canvas.
+        #[cfg(not(target_arch = "wasm32"))]
+        let attrs = attrs
+            .with_inner_size(winit::dpi::LogicalSize::new(
                 render::W as f64 * 3.0,
                 render::H as f64 * 3.0,
             ))
-            .with_min_inner_size(LogicalSize::new(render::W as f64, render::H as f64));
+            .with_min_inner_size(winit::dpi::LogicalSize::new(
+                render::W as f64,
+                render::H as f64,
+            ));
+        #[cfg(target_arch = "wasm32")]
+        let attrs = {
+            use wasm_bindgen::JsCast;
+            use winit::platform::web::WindowAttributesExtWebSys;
+            // the page's <canvas id="mystery-house">, or a new one at the end of the page
+            let canvas = web_sys::window()
+                .and_then(|w| w.document())
+                .and_then(|d| d.get_element_by_id("mystery-house"))
+                .and_then(|e| e.dyn_into::<web_sys::HtmlCanvasElement>().ok());
+            attrs
+                .with_append(canvas.is_none())
+                .with_canvas(canvas)
+                .with_prevent_default(true)
+                .with_focusable(true)
+        };
         let window = Arc::new(el.create_window(attrs).expect("cannot open a window"));
         let size = window.inner_size();
-        let surface = SurfaceTexture::new(size.width, size.height, window.clone());
-        let pixels = Pixels::new(size.width, size.height, surface).expect("cannot start the GPU");
-        self.window = Some(window);
-        self.pixels = Some(pixels);
+        let (w, h) = (size.width.max(1), size.height.max(1));
+        let surface = SurfaceTexture::new(w, h, window.clone());
+        self.window = Some(window.clone());
         self.update_window();
+        #[cfg(not(target_arch = "wasm32"))]
+        {
+            self.pixels = Some(Pixels::new(w, h, surface).expect("cannot start the GPU"));
+        }
+        #[cfg(target_arch = "wasm32")]
+        {
+            use winit::platform::web::WindowExtWebSys;
+            if let Some(c) = window.canvas() {
+                let _ = c.focus();
+            }
+            let proxy = self.proxy.clone();
+            wasm_bindgen_futures::spawn_local(async move {
+                // Canvases take no sRGB format, so the colours go through unconverted.
+                let format = pixels::wgpu::TextureFormat::Rgba8Unorm;
+                let built = pixels::PixelsBuilder::new(w, h, surface)
+                    .texture_format(format)
+                    .surface_texture_format(format)
+                    .build_async()
+                    .await;
+                match built {
+                    Ok(p) => {
+                        if let Some(proxy) = proxy {
+                            let _ = proxy.send_event(UserEvent::Pixels(p));
+                        }
+                    }
+                    Err(e) => warn(&format!("cannot start the GPU: {e}")),
+                }
+            });
+        }
+    }
+
+    fn user_event(&mut self, _: &ActiveEventLoop, event: UserEvent) {
+        match event {
+            UserEvent::Pixels(mut p) => {
+                // the canvas may have been laid out meanwhile
+                if let Some(w) = &self.window {
+                    let size = w.inner_size();
+                    if size.width > 0 && size.height > 0 {
+                        let _ = p.resize_surface(size.width, size.height);
+                        let _ = p.resize_buffer(size.width, size.height);
+                    }
+                    w.request_redraw();
+                }
+                self.pixels = Some(p);
+            }
+        }
     }
 
     fn window_event(&mut self, el: &ActiveEventLoop, _: WindowId, event: WindowEvent) {
@@ -380,7 +485,7 @@ impl ApplicationHandler for App {
                         let ok = p.resize_surface(size.width, size.height).is_ok()
                             && p.resize_buffer(size.width, size.height).is_ok();
                         if !ok {
-                            eprintln!("cannot resize to {}x{}", size.width, size.height);
+                            warn(&format!("cannot resize to {}x{}", size.width, size.height));
                         }
                     }
                 }
@@ -430,30 +535,65 @@ impl ApplicationHandler for App {
 }
 
 fn main() {
-    let args: Vec<String> = std::env::args().skip(1).collect();
-    // The options once to find --dir, then over the settings kept there.
-    let dir = match Settings::default().apply_args(&args) {
-        Ok(dir) => dir.unwrap_or_else(settings::default_dir),
-        Err(msg) => {
-            eprintln!("{msg}");
-            std::process::exit(if args.iter().any(|a| a == "-h" || a == "--help") {
-                0
-            } else {
-                2
-            });
-        }
-    };
-    let mut settings = Settings::load(&dir);
-    let _ = settings.apply_args(&args);
     let json = include_str!("../../../decomp/gamedata.json");
     let data: &'static GameData = Box::leak(Box::new(
         GameData::from_json(json).expect("decomp/gamedata.json"),
     ));
-    let mut app = App::new(data, settings, dir);
-    let event_loop = EventLoop::new().expect("cannot start the event loop");
-    if let Err(e) = event_loop.run_app(&mut app) {
-        eprintln!("{e}");
+    let event_loop = EventLoop::<UserEvent>::with_user_event()
+        .build()
+        .expect("cannot start the event loop");
+    let proxy = event_loop.create_proxy();
+
+    #[cfg(not(target_arch = "wasm32"))]
+    {
+        let args: Vec<String> = std::env::args().skip(1).collect();
+        // The options once to find --dir, then over the settings kept there.
+        let dir = match Settings::default().apply_args(&args) {
+            Ok(dir) => dir.unwrap_or_else(Store::default_dir),
+            Err(msg) => {
+                eprintln!("{msg}");
+                let help = args.iter().any(|a| a == "-h" || a == "--help");
+                std::process::exit(if help { 0 } else { 2 });
+            }
+        };
+        let store = Store::new(dir);
+        let settings = settings_from(&store, &args);
+        let mut app = App::new(data, settings, store, Some(proxy));
+        if let Err(e) = event_loop.run_app(&mut app) {
+            eprintln!("{e}");
+        }
     }
+
+    #[cfg(target_arch = "wasm32")]
+    {
+        use winit::platform::web::EventLoopExtWebSys;
+        console_error_panic_hook::set_once();
+        // The page's query gives the options: ?skip-loader&colour is --skip-loader --colour.
+        let query = web_sys::window()
+            .and_then(|w| w.location().search().ok())
+            .unwrap_or_default();
+        let args: Vec<String> = query
+            .trim_start_matches('?')
+            .split('&')
+            .filter(|a| !a.is_empty())
+            .map(|a| format!("--{}", a.replace('=', " ")))
+            .flat_map(|a| a.split(' ').map(String::from).collect::<Vec<_>>())
+            .collect();
+        let store = Store;
+        let mut settings = settings_from(&store, &args);
+        settings.fullscreen = false; // a page may go full screen only on a key or click
+        event_loop.spawn_app(App::new(data, settings, store, Some(proxy)));
+    }
+}
+
+/// The settings kept in the store, with the options on top.
+fn settings_from(store: &Store, args: &[String]) -> Settings {
+    let text = store.read("settings.txt").unwrap_or_default();
+    let mut settings = Settings::from_text(&String::from_utf8_lossy(&text));
+    if let Err(msg) = settings.apply_args(args) {
+        warn(&msg);
+    }
+    settings
 }
 
 #[cfg(test)]
@@ -465,10 +605,12 @@ mod tests {
     #[test]
     #[ignore]
     fn snapshots() {
-        let out = PathBuf::from(std::env::var("MH_SNAPSHOTS").expect("set MH_SNAPSHOTS"));
+        let out =
+            std::path::PathBuf::from(std::env::var("MH_SNAPSHOTS").expect("set MH_SNAPSHOTS"));
         let json = include_str!("../../../decomp/gamedata.json");
         let data: &'static GameData = Box::leak(Box::new(GameData::from_json(json).unwrap()));
         let dir = std::env::temp_dir().join(format!("mh-snap-{}", std::process::id()));
+        let store = || Store::new(dir.clone());
         let shot = |app: &mut App, name: &str, colour: Colour| {
             app.settings.colour = colour;
             app.blink_from = Instant::now();
@@ -477,7 +619,7 @@ mod tests {
             std::fs::write(out.join(format!("{name}.rgb")), bytes).unwrap();
         };
         // The boot, at moments of its timeline.
-        let mut app = App::new(data, Settings::default(), dir.clone());
+        let mut app = App::new(data, Settings::default(), store(), None);
         for (ms, name) in [
             (1500, "hello_slide"),
             (4000, "hello_address"),
@@ -497,7 +639,7 @@ mod tests {
             begin: Begin::Loader,
             ..Settings::default()
         };
-        let mut app = App::new(data, settings, dir);
+        let mut app = App::new(data, settings, store(), None);
         shot(&mut app, "loader", Colour::White);
         app.editor.insert("G");
         let (l, p) = app.editor.enter(false);

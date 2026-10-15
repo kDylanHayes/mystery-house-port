@@ -19,6 +19,7 @@ to run:
 | macOS 11 or later (Apple silicon and Intel) | `mystery-house-<version>-macos-universal.zip` | `Mystery House.app`; not signed, so the first time, Control-click it and choose Open |
 | Windows (x86-64) | `mystery-house-<version>-windows-x86_64.zip` | `mystery-house.exe`; not signed, so SmartScreen may ask first (More info, Run anyway) |
 | Linux (x86-64, X11 or Wayland) | `mystery-house-<version>-linux-x86_64.tar.gz` | `./mystery-house` |
+| A web page | `mystery-house-<version>-web.zip` | the `mystery-house-web` folder, for any web server ("On a website" below) |
 
 Or build and run it from the source (with [Rust](https://rustup.rs)):
 
@@ -42,7 +43,7 @@ text page and back.
 | F2 | white on black, or NTSC colour |
 | F3 | square pixels in whole multiples, or a 4:3 picture |
 | F11, Alt+Return | full screen |
-| Cmd+1-9 (Ctrl on Windows and Linux) | save slot |
+| Cmd+1-9 (Ctrl on Windows and Linux; Alt in a browser, which keeps the others for its tabs) | save slot |
 
 `SAVE GAME` and `RESTORE GAME` use the current slot. Each slot is a file in the original's
 format (`SAVED GAME 1` ... `SAVED GAME 9`, the 2255 bytes the Apple BSAVEs), so saves move to
@@ -51,6 +52,30 @@ disk does. Saves and settings live in the platform's data folder (`~/Library/App
 Support/Mystery House` on macOS); `mystery-house --help` lists the command-line options
 (`--boot`, `--loader`, `--skip-loader`, `--bugfix`, `--colour`, `--4:3`, `--fullscreen`,
 `--slot N`, `--dir PATH`).
+
+### On a website
+
+The web package is a static folder: `index.html`, `mystery-house.js` and
+`mystery-house_bg.wasm` (about 5 MB, 1.4 MB gzipped). Copy the folder to any web server and the
+game plays at its `index.html`; no server code is needed. It needs a browser with WebGPU or
+WebGL2 (any current desktop browser) and a keyboard. To put it inside one of your pages:
+
+```html
+<iframe src="/mystery-house-web/" width="840" height="576" style="border: 0"
+        title="Mystery House"></iframe>
+```
+
+The game fills its page or frame and scales the Apple's screen to fit; a click gives it the
+keyboard. The command-line options become the page's query: `index.html?skip-loader&colour`.
+Saves and settings stay in the player's browser (local storage, per website). To build the
+folder yourself:
+
+```bash
+tools/build-web.sh
+```
+
+(It needs `rustup target add wasm32-unknown-unknown` and the matching `wasm-bindgen-cli`; the
+script says which version. The folder lands in `dist/web`.)
 
 ## Building and checking
 
@@ -94,8 +119,8 @@ fixes the decompilation documents may be offered as an option, checked by `bugfi
 ## Releasing
 
 Pushing a tag `v*` runs `.github/workflows/release.yml`: on macOS, Windows and Linux it runs the
-tests, builds the game (on macOS one app for both processors) and publishes the three packages
-as a GitHub release. Running the workflow by hand builds the packages without publishing them.
+tests and builds the game (on macOS one app for both processors), builds the web package, and
+publishes the four packages as a GitHub release. Running the workflow by hand builds the packages without publishing them.
 
 ```bash
 git tag v1.0.1 && git push origin v1.0.1

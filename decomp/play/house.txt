@@ -1,0 +1,401 @@
+# A tour of the house trying each room's rules: doors and gates in every state, the
+# refusals, water, the trunk, the hidden wall. Rules that test the room's picture fail in the
+# dark (after turn 36 without a light), so the candle is lit first. tests/test_play.py checks
+# the transcript and screens; tests/play/coverage.txt records what all the scripts exercise.
+
+# in, and straight to the kitchen for the matches and a pitcher of water
+GO STAIRS
+OPEN DOOR
+GO DOOR
+W
+OPEN CABINET
+LOOK CABINET
+GET MATCHES
+OPEN REFRIGERATOR
+LOOK REFRIGERATOR
+GET PITCHER
+FAUCET ON
+GET WATER
+FAUCET OFF
+E
+S
+
+# dining room: lighting the candle here starts a fire on the next command; the water puts it out.
+# Looking at something shows its picture instead of the room's, and the door rules test the
+# room's picture, so LOOK ROOM puts the view back first.
+LIGHT CANDLE
+GET CANDLE
+LIGHT CANDLE
+LOOK ROOM
+POUR WATER
+GET RUG
+GET TABLE
+LIGHT LAMP
+GET LAMP
+LOOK HOLE
+GET KEY
+LOOK ROOM
+GO DOOR
+CLOSE DOOR
+S
+OPEN DOOR
+OPEN DOOR
+CLOSE DOOR
+OPEN DOOR
+UNLIGHT CANDLE
+LIGHT CANDLE
+S
+
+# back yard (the dining-room door is open): the door and the gate in all four combinations
+GO GATE
+LOOK BODY
+GET BODY
+UP FENCE
+JUMP FENCE
+CLOSE DOOR
+GO DOOR
+GO GATE
+OPEN DOOR
+CLOSE DOOR
+OPEN GATE
+GO DOOR
+CLOSE GATE
+OPEN GATE
+OPEN DOOR
+CLOSE GATE
+OPEN GATE
+CLOSE DOOR
+GO GATE
+
+# cemetery (the gate is open as you arrive): Joe will not let you have the shovel
+UP FENCE
+JUMP FENCE
+GET GRAVESTONE
+LOOK GRAVESTONE
+READ GRAVESTONE
+LOOK PERSON
+LOOK JOE
+TALK JOE
+TALK PERSON
+KILL PERSON
+KILL JOE
+WITH DAGGER
+GET PERSON
+GET JOE
+GET SHOVEL
+LOOK BODY
+GET BODY
+CLOSE GATE
+CLOSE GATE
+GO GATE
+OPEN GATE
+OPEN GATE
+GO GATE
+
+# back yard (gate open, door closed): through the gate again with the door open too, then
+# -> dining room and out again -> side yard
+OPEN DOOR
+GO GATE
+GO GATE
+GO DOOR
+S
+CLOSE GATE
+GO DOOR
+S
+N
+
+# side yard and library: the side door from both sides
+UP FENCE
+JUMP FENCE
+GO DOOR
+OPEN DOOR
+OPEN DOOR
+CLOSE DOOR
+CLOSE DOOR
+OPEN DOOR
+GO DOOR
+LOOK SHELVES
+GET BOOKS
+GET COUCH
+GET TABLE
+GET CHAIR
+GET NOTE
+READ NOTE
+LOOK ROOM
+LOOK NOTE
+GO DOOR
+CLOSE DOOR
+CLOSE DOOR
+E
+OPEN DOOR
+OPEN DOOR
+E
+W
+W
+
+# entry hall, after the first visit
+N
+E
+W
+W
+
+# kitchen: cabinet, refrigerator, water, the door to the forest
+GET CABINET
+CLOSE CABINET
+LOOK CABINET
+OPEN CABINET
+LOOK CABINET
+BREAK WALL
+LOOK REFRIGERATOR
+CLOSE REFRIGERATOR
+CLOSE REFRIGERATOR
+LOOK REFRIGERATOR
+OPEN REFRIGERATOR
+OPEN REFRIGERATOR
+GET WATER
+FAUCET ON
+DROP PITCHER
+GET WATER
+GET PITCHER
+GET WATER
+DRINK WATER
+POUR WATER
+FAUCET OFF
+LOOK SINK
+GET BUTTERKNIFE
+LOOK ROOM
+LOOK SINK
+LOOK ROOM
+GO DOOR
+W
+CLOSE DOOR
+OPEN DOOR
+OPEN DOOR
+W
+UP
+CLOSE DOOR
+E
+S
+N
+GO STAIRS
+
+# upstairs: the hallways and the bedrooms
+GO STAIRS
+UP STAIRS
+GO HALL
+GO DOOR
+LOOK DOOR
+LOOK HALL
+E
+GO DOOR
+GET BED
+GET TRUNK
+GO DOOR
+GO DOOR
+GET DAGGER
+GO DOOR
+E
+GO DOOR
+LOOK BODY
+GET BODY
+GET BED
+GO DOOR
+W
+W
+W
+GO DOOR
+LOOK BODY
+GET BODY
+GET CHAIR
+GET TRUNK
+GET CRADLE
+GO DOOR
+W
+GO DOOR
+GET BED
+GET TRUNK
+GO DOOR
+E
+E
+
+# attic (no trapdoor found yet) and storage room: the trunk, locked and unlocked
+N
+UP STAIRS
+GO STAIRS
+GO STAIRS
+HELP
+OPEN TRAPDOOR
+GO TRAPDOOR
+CLOSE TRAPDOOR
+UP LADDER
+LOOK WINDOW
+GET LADDER
+BREAK WINDOW
+GO DOOR
+GET BOXES
+GET TRUNK
+OPEN TRUNK
+LOOK TRUNK
+CLOSE TRUNK
+DROP KEY
+UNLOCK TRUNK
+GET KEY
+UNLOCK TRUNK
+UNLOCK TRUNK
+LOOK TRUNK
+DROP KEY
+UNLOCK TRUNK
+GET KEY
+OPEN TRUNK
+OPEN TRUNK
+LOOK TRUNK
+GET GUN
+LOOK ROOM
+CLOSE TRUNK
+CLOSE TRUNK
+GO DOOR
+GET SLEDGEHAMMER
+HELP
+D
+
+# study and bathroom: the picture, the button and the wall
+N
+GO DOOR
+GO DOOR
+LOOK PICTURE
+GET TABLE
+GET CHAIR
+UNSCREW BOLTS
+GET PICTURE
+DROP BUTTERKNIFE
+WITH BUTTERKNIFE
+GET BUTTERKNIFE
+WITH BUTTERKNIFE
+GET PICTURE
+PRESS BUTTON
+PRESS BUTTON
+PRESS BUTTON
+CLOSE WALL
+E
+FAUCET ON
+GET WATER
+POUR WATER
+DROP PITCHER
+GET WATER
+FAUCET OFF
+GET WATER
+GET PITCHER
+FLUSH TOILET
+LOOK BODY
+GET BODY
+GET SHOWER
+GO TOILET
+GET TOWEL
+GO DOOR
+PRESS BUTTON
+GO WALL
+
+# crawlspace and stairway down to the basement; passage and pantry
+OPEN WALL
+BREAK WALL
+GO STAIRS
+GO STAIRS
+D
+GO DOOR
+GO STAIRS
+GET FOOD
+GET JARS
+GET BOXES
+GO HOLE
+UP STAIRS
+UP STAIRS
+GO STAIRS
+S
+
+# basement: the algae, the jewels and the front-door key
+BREAK WALL
+GET TABLE
+GET ALGAE
+DROP TOWEL
+WIPE ALGAE
+GET TOWEL
+LOOK BODY
+GET BODY
+GET DAISY
+LOOK TABLE
+LOOK BRICKS
+LOOK JEWELS
+WIPE ALGAE
+WIPE ALGAE
+GET BRICKS
+GET JEWELS
+GET KEY
+UP STAIRS
+D
+GO STAIRS
+D
+GO HOLE
+
+# tunnel, pine tree and forest; in by the kitchen door
+LOOK TUNNEL
+GO HOLE
+GO HOLE
+N
+LOOK TREE
+UP TREE
+GO HOUSE
+GET TELESCOPE
+LOOK TELESCOPE
+LOOK ROOM
+UP TREE
+D
+LOOK TREE
+UP TREE
+HELP
+N
+W
+N
+E
+N
+UP
+OPEN DOOR
+UP
+
+# kitchen: through the bricks to the pantry and back; out by the front door
+MOVE CABINET
+MOVE CABINET
+BREAK BRICKS
+GO HOLE
+GO HOLE
+E
+UNLOCK DOOR
+OPEN DOOR
+N
+
+# porch and front yard; the commands that work anywhere
+OPEN DOOR
+CLOSE DOOR
+CLOSE DOOR
+GO DOOR
+OPEN DOOR
+GO STAIRS
+LOOK FENCE
+UP FENCE
+JUMP FENCE
+LOOK TREE
+U
+D
+UP STAIRS
+D
+INVENTORY
+LOOK
+SLEEP
+HELP
+LOOK WINDOW
+BREAK WINDOW
+GO WINDOW
+LOOK GUN
+GO TREE
+UP
+QUIT
+N

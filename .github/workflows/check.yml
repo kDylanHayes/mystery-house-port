@@ -1,0 +1,15 @@
+# Every push and pull request: the pinned copy of the decompilation's files is intact.
+name: check
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: decomp/ matches its MANIFEST
+        run: tools/sync-decomp.sh --verify

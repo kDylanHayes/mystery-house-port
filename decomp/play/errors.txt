@@ -1,0 +1,11 @@
+# Commands the game does not understand: each reply copies the typed word into a message
+# template inside read_command (unknown_verb_text, unknown_noun_verb, unknown_noun_text), so
+# this checks those patched messages. Then a few rule-less and refused commands.
+XYZZY
+PLUGH LAMP
+GO XYZZY
+OPEN PLUGH
+SCORE
+GO DOOR
+N
+GET STAIRS

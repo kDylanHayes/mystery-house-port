@@ -1,0 +1,208 @@
+# Deaths, the other endings, darkness, and saving and restoring. After a death the game asks
+# WOULD YOU LIKE TO PLAY AGAIN; Y starts a new game. RESTORE GAME before any SAVE GAME loads
+# the saved game on the disk: the cemetery at turn 121, Joe alive, most things carried and the
+# candle lit.
+
+# new games: each way out of the entry hall on the first visit (the six people are shown).
+# Carrying nothing yet, the notes, matches and candle are refused.
+LOOK NOTE
+READ NOTE
+LIGHT MATCHES
+LIGHT CANDLE
+GO STAIRS
+OPEN DOOR
+GO DOOR
+LOOK PERSON
+GO DOOR
+OPEN DOOR
+UNLOCK DOOR
+BREAK DOOR
+W
+LIGHT STOVE
+Y
+GO STAIRS
+OPEN DOOR
+GO DOOR
+N
+E
+QUIT
+Y
+GO STAIRS
+OPEN DOOR
+GO DOOR
+GO STAIRS
+QUIT
+Y
+GO STAIRS
+OPEN DOOR
+GO DOOR
+GET NOTE
+READ NOTE
+LOOK NOTE
+UP
+QUIT
+Y
+
+# a lit candle in the dining room with no water at hand: the fire spreads
+GO STAIRS
+OPEN DOOR
+GO DOOR
+S
+N
+W
+OPEN CABINET
+LOOK CABINET
+GET MATCHES
+E
+S
+GET CANDLE
+LIGHT CANDLE
+LOOK ROOM
+LOOK ROOM
+Y
+
+# the saved game: blow out the candle, strike a match and wait for the dark; then fall into
+# a grave while Joe is alive
+RESTORE GAME
+INVENTORY
+LIGHT MATCHES
+UNLIGHT CANDLE
+LOOK
+LOOK
+LOOK
+LOOK
+LOOK
+LIGHT CANDLE
+GO GRAVES
+Y
+
+# the saved game: kill Joe with the dagger, take his shovel; out of the attic window
+RESTORE GAME
+WITH DAGGER
+LOOK BODY
+GO GRAVES
+GET SHOVEL
+OPEN GATE
+GO GATE
+GO DOOR
+N
+UP
+N
+UP
+GO WINDOW
+Y
+
+# the saved game: shoot Joe instead (the gun's one bullet); out of the storage-room window.
+# The game says YOU ARE DEAD but carries on: this rule ($4FEB) has no "ask to play again".
+RESTORE GAME
+WITH GUN
+WITH GUN
+OPEN GATE
+GO GATE
+GO DOOR
+N
+UP
+N
+UP
+GO DOOR
+GO WINDOW
+INVENTORY
+
+# the saved game: find the trapdoor with the telescope, climb to the tower and save there
+RESTORE GAME
+OPEN GATE
+GO GATE
+GO DOOR
+N
+W
+MOVE CABINET
+BREAK WALL
+GO HOLE
+D
+S
+GO HOLE
+N
+UP
+LOOK TELESCOPE
+D
+D
+N
+S
+OPEN DOOR
+UP
+E
+UP
+N
+UP
+OPEN TRAPDOOR
+OPEN TRAPDOOR
+CLOSE TRAPDOOR
+CLOSE TRAPDOOR
+GO TRAPDOOR
+OPEN TRAPDOOR
+UP LADDER
+CLOSE TRAPDOOR
+GO TRAPDOOR
+GO TRAPDOOR
+SAVE GAME
+
+# Daisy, each wrong way: every one ends with her knife
+LOOK PERSON
+LOOK DAISY
+KILL DAISY
+GET NOTE
+GET KNIFE
+GET BODY
+WITH DAGGER
+Y
+RESTORE GAME
+WITH BUTTERKNIFE
+Y
+RESTORE GAME
+WITH SLEDGEHAMMER
+Y
+RESTORE GAME
+DROP DAGGER
+WITH DAGGER
+Y
+RESTORE GAME
+DROP BUTTERKNIFE
+WITH BUTTERKNIFE
+Y
+RESTORE GAME
+DROP SLEDGEHAMMER
+WITH SLEDGEHAMMER
+Y
+RESTORE GAME
+DROP GUN
+WITH GUN
+Y
+
+# the bullet wasted in the attic: the empty gun is no use against her
+RESTORE GAME
+GO TRAPDOOR
+WITH GUN
+WITH GUN
+GO TRAPDOOR
+WITH GUN
+Y
+
+# the right way: shoot her; then she is dead whatever you try
+RESTORE GAME
+WITH GUN
+LOOK DAISY
+LOOK BODY
+WITH GUN
+WITH DAGGER
+GET NOTE
+READ NOTE
+LOOK NOTE
+DROP NOTE
+READ NOTE
+LOOK NOTE
+INVENTORY
+QUIT
+Y
+
+# rude words end the game at once
+FUCK

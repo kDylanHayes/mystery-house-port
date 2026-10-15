@@ -1,0 +1,167 @@
+# The bug-fix build (./build.sh --bugfix), played by tests/test_bugfix.py on both builds: each
+# fix shows up as a difference from the original. Starts from the saved game on the disk (the
+# cemetery, turn 121, the trunk already unlocked and open, most things carried).
+
+# restore game: the action pointer's high byte comes back too (tests/test_bugfix.py checks it)
+RESTORE GAME
+
+# the open trunk: IT IS OPEN (the original says IT IS LOCKED)
+OPEN GATE
+GO GATE
+GO DOOR
+N
+UP
+N
+UP
+GO DOOR
+OPEN TRUNK
+
+# the storage-room window ends the game (the original goes on after YOU ARE DEAD)
+GO WINDOW
+Y
+
+# stabbing at Joe without the dagger leaves his eyes alone (the original erases them)
+RESTORE GAME
+DROP DAGGER
+WITH DAGGER
+
+# darkness after turn 255: it stays dark (the original lights up again at turn 256)
+UNLIGHT CANDLE
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+SLEEP
+QUIT
+N

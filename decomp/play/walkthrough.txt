@@ -1,0 +1,101 @@
+# A complete solution of Mystery House, played by tools/play.py (tests/test_play.py checks it
+# ends with the winning message). Each section names the room it starts in.
+
+# front yard -> porch -> entry hall (the door locks behind you)
+GO STAIRS
+OPEN DOOR
+GO DOOR
+
+# kitchen: matches (in the cabinet), the pitcher (in the refrigerator), water from the sink
+W
+OPEN CABINET
+LOOK CABINET
+GET MATCHES
+OPEN REFRIGERATOR
+LOOK REFRIGERATOR
+GET PITCHER
+FAUCET ON
+GET WATER
+FAUCET OFF
+
+# dining room: carrying a lit candle you trip and start a fire; the water puts it out and the
+# burnt hole in the floor holds the trunk key
+E
+S
+GET CANDLE
+LIGHT CANDLE
+LOOK ROOM
+POUR WATER
+LOOK HOLE
+GET KEY
+N
+
+# attic and storage room: the sledgehammer, then the gun from the locked trunk
+UP
+N
+UP
+GET SLEDGEHAMMER
+GO DOOR
+UNLOCK TRUNK
+OPEN TRUNK
+LOOK TRUNK
+GET GUN
+GO DOOR
+
+# study and bathroom: the towel
+D
+N
+GO DOOR
+E
+GET TOWEL
+GO DOOR
+N
+S
+S
+D
+
+# kitchen -> pantry -> basement: break through the bricks behind the cabinet; under the algae
+# are the jewels, and Tom's body has the front-door key
+W
+MOVE CABINET
+BREAK WALL
+GO HOLE
+D
+S
+WIPE ALGAE
+GET BRICKS
+GET JEWELS
+GET KEY
+
+# tunnel -> pine tree: the telescope shows a trapdoor in the attic ceiling; back through the
+# forest and in by the kitchen door
+GO HOLE
+N
+UP
+LOOK TELESCOPE
+D
+D
+N
+S
+OPEN DOOR
+UP
+
+# back up to the attic and through the trapdoor: Daisy is the killer
+E
+UP
+N
+UP
+OPEN TRAPDOOR
+GO TRAPDOOR
+SHOOT GUN
+GO TRAPDOOR
+D
+S
+D
+
+# out of the house with the jewels
+UNLOCK DOOR
+OPEN DOOR
+N
+GO STAIRS
+N

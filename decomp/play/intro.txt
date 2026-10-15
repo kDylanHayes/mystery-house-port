@@ -1,0 +1,21 @@
+# From the 1987 loader into the game, played with play.py --boot: the loader's menu (a wrong
+# key first, then I), every page of instructions (each waits for RETURN), then BRUN ADVENTURE
+# and the game. In the game: RETURN on an empty line flips to the text page and back (<CR> is
+# an empty line), words cut to their first 8 letters (FENCEPOS is unknown, TELESCOP is a
+# noun), and the end. HOME clears the screen
+# between the instruction pages; the transcript shows it as <HOME>.
+X
+I
+<CR>
+<CR>
+<CR>
+<CR>
+<CR>
+<CR>
+<CR>
+<CR>
+LOOK FENCEPOSTS
+LOOK TELESCOPE
+GO STAIRS
+QUIT
+N

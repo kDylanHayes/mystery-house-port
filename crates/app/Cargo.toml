@@ -1,6 +1,6 @@
 [package]
 name = "mystery-house-app"
-version = "1.1.0"
+version = "1.1.1"
 description = "Mystery House in a window: the engine with the Apple II screen, keyboard and saves"
 edition.workspace = true
 license.workspace = true

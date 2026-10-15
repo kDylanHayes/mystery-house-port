@@ -164,7 +164,7 @@ jobs:
       id-token: write
     environment:
       name: github-pages
-      url: ${{ steps.deploy.outputs.page_url }}
+      url: ${{ steps.deploy.outputs.page_url || steps.deploy-again.outputs.page_url }}
     concurrency:
       group: pages
       cancel-in-progress: false
@@ -181,5 +181,17 @@ jobs:
         with:
           path: site
 
+      # Just after the upload, GitHub's list of the run's artifacts can still miss the site
+      # (deploy-pages then finds no "github-pages"); a second try a little later finds it.
+      # Re-running the job does not help: it uploads a second "github-pages".
       - id: deploy
+        uses: actions/deploy-pages@v5
+        continue-on-error: true
+
+      - name: Wait before trying again
+        if: steps.deploy.outcome == 'failure'
+        run: sleep 30
+
+      - id: deploy-again
+        if: steps.deploy.outcome == 'failure'
         uses: actions/deploy-pages@v5

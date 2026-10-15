@@ -3,14 +3,16 @@
 //! ```text
 //! mh-play                         check every script (exit status 1 if any fails)
 //! mh-play house deaths            check those scripts
-//! mh-play --play <file> [--loader] [--bugfix] [--pixels]
+//! mh-play --play <file> [--loader] [--bugfix] [--pixels] [--save-in <f>] [--save-out <f>]
 //!                                 play a command file and print the transcript
-//!                                 (and the pixel hashes)
+//!                                 (and the pixel hashes), starting with save file <f>
+//!                                 instead of the disk's, and writing the save file at
+//!                                 the end (both in the original's SAVED GAME format)
 //! ```
 
 use std::process::ExitCode;
 
-use mh_play::{check, decomp_dir, load_data, play, read_commands, SCRIPTS};
+use mh_play::{check, decomp_dir, load_data, play_from, read_commands, SCRIPTS};
 use mystery_house::{Options, Start};
 
 fn main() -> ExitCode {
@@ -32,7 +34,23 @@ fn main() -> ExitCode {
         let options = Options {
             bugfix: args.iter().any(|a| a == "--bugfix"),
         };
-        let rec = play(&data, start, options, &read_commands(&text));
+        let arg = |name: &str| {
+            args.iter()
+                .position(|a| a == name)
+                .and_then(|i| args.get(i + 1))
+        };
+        let save_in =
+            arg("--save-in").map(|f| std::fs::read(f).unwrap_or_else(|e| panic!("{f}: {e}")));
+        let rec = play_from(
+            &data,
+            start,
+            options,
+            save_in.as_deref(),
+            &read_commands(&text),
+        );
+        if let Some(f) = arg("--save-out") {
+            std::fs::write(f, &rec.saved_game).unwrap_or_else(|e| panic!("{f}: {e}"));
+        }
         for line in &rec.transcript {
             println!("{line}");
         }

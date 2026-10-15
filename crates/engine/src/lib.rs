@@ -11,6 +11,7 @@
 //! ```
 
 mod data;
+pub mod savefile;
 mod screen;
 
 pub use data::{Action, Condition, GameData, Rule, Title};
@@ -44,6 +45,15 @@ pub enum Prompt {
     Line,
 }
 
+/// What the screen shows.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub enum Display {
+    /// The hi-res picture with the bottom four lines of the text page below it.
+    Mixed,
+    /// The whole 24-line text page (the instruction pages, or RETURN on an empty line).
+    Text,
+}
+
 /// What the game printed.
 #[derive(Clone, Debug, PartialEq)]
 pub enum Output {
@@ -55,7 +65,7 @@ pub enum Output {
 
 /// Everything `SAVE GAME` writes and `RESTORE GAME` loads back (the game's `$0830-$10FE`),
 /// as far as it changes what the game does.
-#[derive(Clone)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct State {
     pub room: u8,
     pub turn: u16,
@@ -70,7 +80,7 @@ pub struct State {
     pub rooms: Vec<RoomState>,
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct ObjectState {
     pub room: u8,
     pub picture: u8,
@@ -79,7 +89,7 @@ pub struct ObjectState {
     pub status: u8,
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct RoomState {
     pub base_picture: u8,
     pub current_picture: u8,
@@ -121,6 +131,10 @@ pub struct Game<'a> {
     phase: Phase,
     /// RETURN on an empty line shows the full text page instead of the picture.
     text_page: bool,
+    /// How many times `SAVE GAME` has written the save file.
+    saves: u32,
+    /// `BRUN ADVENTURE` has put the 1980 title on screen since the last look.
+    title_1980: bool,
 }
 
 impl<'a> Game<'a> {
@@ -173,6 +187,8 @@ impl<'a> Game<'a> {
             output: Vec::new(),
             phase: Phase::Ended,
             text_page: false,
+            saves: 0,
+            title_1980: false,
         };
         match start {
             Start::Loader => game.start_loader(),
@@ -231,9 +247,45 @@ impl<'a> Game<'a> {
         &self.screen
     }
 
-    /// True while the full text page is shown instead of the picture.
-    pub fn text_page(&self) -> bool {
-        self.text_page
+    /// What the screen shows: the instruction pages and RETURN on an empty line show the
+    /// text page.
+    pub fn display(&self) -> Display {
+        match self.phase {
+            Phase::Page(_) => Display::Text,
+            Phase::Command if self.text_page => Display::Text,
+            _ => Display::Mixed,
+        }
+    }
+
+    /// The save file's state: what `RESTORE GAME` loads.
+    pub fn saved_game(&self) -> &State {
+        &self.saved
+    }
+
+    /// Put a state in the save file (a front end's save slot, or a file in the original's
+    /// format read with [`savefile::read`]).
+    pub fn set_saved_game(&mut self, state: State) {
+        self.saved = state;
+    }
+
+    /// The disk's saved game, which the save file holds before any `SAVE GAME`.
+    pub fn disk_saved_game_state(&self) -> State {
+        Self::disk_saved_game(self.data, &self.startup)
+    }
+
+    /// How many times `SAVE GAME` has run: a front end writes its save file when this changes.
+    pub fn saves(&self) -> u32 {
+        self.saves
+    }
+
+    /// True once after `BRUN ADVENTURE` loaded the 1980 title (which the first room drawn
+    /// then cleared): a front end may show [`GameData::title_1980`] for a moment.
+    pub fn take_title_1980(&mut self) -> bool {
+        std::mem::take(&mut self.title_1980)
+    }
+
+    pub fn data(&self) -> &'a GameData {
+        self.data
     }
 
     pub fn options(&self) -> Options {
@@ -308,6 +360,7 @@ impl<'a> Game<'a> {
         self.print("\n");
         let t = &self.data.title_1980;
         self.screen.load_page(&t.pixels, &t.colour_bits);
+        self.title_1980 = true;
         self.new_game();
     }
 
@@ -523,7 +576,10 @@ impl<'a> Game<'a> {
             }
             Action::Get => self.get(),
             Action::Drop => self.drop_object(),
-            Action::SaveGame => self.saved = self.state.clone(),
+            Action::SaveGame => {
+                self.saved = self.state.clone();
+                self.saves += 1;
+            }
             Action::RestoreGame => {
                 self.state = self.saved.clone();
                 return Flow::Stop;
@@ -704,6 +760,37 @@ mod tests {
             word_wrap(s),
             "YOU ARE IN THE FRONT YARD OF A LARGE\nABANDONED VICTORIAN HOUSE.  STONE STEPS\nLEAD UP TO A WIDE PORCH\n"
         );
+    }
+
+    fn data() -> GameData {
+        let path = concat!(env!("CARGO_MANIFEST_DIR"), "/../../decomp/gamedata.json");
+        GameData::from_json(&std::fs::read_to_string(path).unwrap()).unwrap()
+    }
+
+    #[test]
+    fn save_files_read_back() {
+        let data = data();
+        let game = Game::new(&data, Options::default(), Start::Game);
+        for state in [game.disk_saved_game_state(), game.state().clone()] {
+            let file = savefile::write(&data, &state);
+            assert_eq!(file.len(), 2255);
+            assert_eq!(savefile::read(&data, &file).unwrap(), state);
+            let mut dos = vec![0x30, 0x08, 0xCF, 0x08];
+            dos.extend(&file);
+            assert_eq!(savefile::read(&data, &dos).unwrap(), state);
+        }
+        assert!(savefile::read(&data, &[0; 100]).is_err());
+    }
+
+    #[test]
+    fn save_game_reaches_the_save_file() {
+        let data = data();
+        let mut game = Game::new(&data, Options::default(), Start::Game);
+        game.submit("GO STAIRS");
+        game.submit("SAVE GAME");
+        assert_eq!(game.saves(), 1);
+        assert_eq!(game.saved_game().room, 2);
+        assert_eq!(game.saved_game().turn, 2);
     }
 
     #[test]

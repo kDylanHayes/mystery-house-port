@@ -5,7 +5,7 @@ use std::fmt::Write as _;
 use std::fs;
 use std::path::{Path, PathBuf};
 
-use mystery_house::{Game, GameData, Options, Output, Prompt, Screen, Start};
+use mystery_house::{savefile, Game, GameData, Options, Output, Prompt, Screen, Start};
 use sha2::{Digest, Sha256};
 
 /// The scripts, where each starts and which expected files it is compared with.
@@ -141,10 +141,27 @@ pub struct Recording {
     pub prompts: Vec<(Prompt, String)>,
     /// Why the play stopped.
     pub stopped: String,
+    /// The save file at the end, in the original's format.
+    pub saved_game: Vec<u8>,
 }
 
 pub fn play(data: &GameData, start: Start, options: Options, commands: &[String]) -> Recording {
+    play_from(data, start, options, None, commands)
+}
+
+/// Play with `saved_game` (the original's format) in the save file instead of the disk's.
+pub fn play_from(
+    data: &GameData,
+    start: Start,
+    options: Options,
+    saved_game: Option<&[u8]>,
+    commands: &[String],
+) -> Recording {
     let mut game = Game::new(data, options, start);
+    if let Some(file) = saved_game {
+        let state = savefile::read(data, file).unwrap_or_else(|e| panic!("saved game: {e}"));
+        game.set_saved_game(state);
+    }
     let mut t = Transcript::default();
     let mut prompts = Vec::new();
     let mut commands = commands.iter();
@@ -165,10 +182,12 @@ pub fn play(data: &GameData, start: Start, options: Options, commands: &[String]
         game.submit(&cmd);
     };
     t.flush();
+    let saved_game = savefile::write(data, game.saved_game());
     Recording {
         transcript: t.lines,
         prompts,
         stopped,
+        saved_game,
     }
 }
 

@@ -6,8 +6,37 @@ public domain since 1987), built from the
 rather than from the Apple II code.
 
 **Status:** the engine, in Rust, plays every conformance script exactly as the original
-(transcripts and pixel hashes), with the documented bug fixes as an option. There is no front
-end yet: the game runs headless.
+(transcripts and pixel hashes), with the documented bug fixes as an option, and runs in a
+window on macOS, Windows and Linux.
+
+## Playing
+
+```bash
+cargo run --release -p mystery-house-app
+```
+
+It starts at the 1987 loader's menu (`G` for the game, `I` for the instructions) over the
+Sierra title; the 1980 title shows for a moment as the game loads. Type commands as on the
+Apple: two words, verb first (`GO STAIRS`, `LOOK SINK`); RETURN on an empty line flips to the
+text page and back.
+
+| Key | |
+|---|---|
+| Left, Right, Home, End, Backspace, Delete | edit the line (lower case is typed as capitals) |
+| Up, Down | earlier commands |
+| Esc | clear the line |
+| F1 | the instructions, at any time (RETURN for the next page, Esc to close) |
+| F2 | white on black, or NTSC colour |
+| F3 | square pixels in whole multiples, or a 4:3 picture |
+| F11, Alt+Return | full screen |
+| Cmd+1-9 (Ctrl on Windows and Linux) | save slot |
+
+`SAVE GAME` and `RESTORE GAME` use the current slot. Each slot is a file in the original's
+format (`SAVED GAME 1` ... `SAVED GAME 9`, the 2255 bytes the Apple BSAVEs), so saves move to
+and from an Apple II or an emulator; an empty slot holds the disk's saved game, as the original
+disk does. Saves and settings live in the platform's data folder (`~/Library/Application
+Support/Mystery House` on macOS); `mystery-house --help` lists the command-line options
+(`--skip-loader`, `--bugfix`, `--colour`, `--4:3`, `--fullscreen`, `--slot N`, `--dir PATH`).
 
 ## Building and checking
 
@@ -21,13 +50,15 @@ cargo run --release -p mh-play
 
 The first plays every script in `decomp/play/` as a test; the second does the same and prints
 the first difference of each script that fails. `mh-play house deaths` checks only those, and
-`mh-play --play <file> [--loader] [--bugfix] [--pixels]` plays any command file and prints the
-transcript (and the pixel hash at every prompt).
+`mh-play --play <file> [--loader] [--bugfix] [--pixels] [--save-in F] [--save-out F]` plays
+any command file and prints the transcript (and the pixel hash at every prompt), optionally
+starting from a save file and writing the save file at the end.
 
 | Crate | |
 |---|---|
 | `crates/engine` (`mystery-house`) | the engine: loads `gamedata.json`, runs the loader and the turn loop, draws the screen; headless, fed one line at a time |
 | `crates/play` (`mh-play`) | the script runner and the `cargo test` checks |
+| `crates/app` (`mystery-house`) | the window (winit + pixels): the Apple's text page with its own 5 x 7 font, the line editor, white or NTSC colour, scaling, save slots and settings |
 
 ## What the port works from
 

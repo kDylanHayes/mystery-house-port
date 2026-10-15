@@ -1,0 +1,17 @@
+[package]
+name = "mystery-house-app"
+version = "0.1.0"
+description = "Mystery House in a window: the engine with the Apple II screen, keyboard and saves"
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[[bin]]
+name = "mystery-house"
+path = "src/main.rs"
+
+[dependencies]
+mystery-house = { path = "../engine" }
+pixels = "0.17.2"
+winit = "0.30.13"
+dirs = "6"

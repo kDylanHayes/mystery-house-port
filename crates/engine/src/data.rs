@@ -33,6 +33,8 @@ pub struct GameData {
     /// The 1987 Sierra title (`AUTO LOAD OBJ`) and the 1980 On-Line Systems title (`ADVENTURE`).
     pub title_1987: Title,
     pub title_1980: Title,
+    /// Where the game keeps things in memory (`CURONO`, `OBJBASE`, ...), for its save files.
+    pub addresses: HashMap<String, u16>,
 }
 
 pub struct Room {
@@ -45,6 +47,8 @@ pub struct Room {
 }
 
 pub struct Object {
+    /// The record's address in the object table.
+    pub addr: u16,
     pub id: u8,
     pub noun: u8,
     pub room: u8,
@@ -179,6 +183,7 @@ mod json {
         saved_game: SavedGame,
         loader: Loader,
         titles: HashMap<String, Title>,
+        addresses: HashMap<String, u16>,
     }
 
     #[derive(Deserialize)]
@@ -203,6 +208,7 @@ mod json {
 
     #[derive(Deserialize)]
     struct Object {
+        addr: u16,
         OBJECTNO: u8,
         noun: u8,
         OROOM: u8,
@@ -434,6 +440,7 @@ mod json {
                     .objects
                     .into_iter()
                     .map(|o| super::Object {
+                        addr: o.addr,
                         id: o.OBJECTNO,
                         noun: o.noun,
                         room: o.OROOM,
@@ -476,6 +483,7 @@ mod json {
                 },
                 title_1987: title(&self.titles, "1987")?,
                 title_1980: title(&self.titles, "1980")?,
+                addresses: self.addresses,
             })
         }
     }

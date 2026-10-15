@@ -15,7 +15,8 @@ overview.
   bug-fix option, save slots, the original's `SAVED GAME` format, `--script` play. The boot (HELLO and
   MYSTERY.HELLO) replays `gamedata.json`'s `boot` timeline (decomp v1.3, `crates/app/src/boot.rs`).
 - The repo is public (since 2026-10-15) and its web build is live on GitHub Pages,
-  https://kdylanhayes.github.io/mystery-house-port/, redeployed by every release tag
+  https://mh.dylanhayes.xyz/ (the custom domain is set in the repo's Pages settings, not in a
+  CNAME file; the github.io address redirects to it), redeployed by every release tag
   (`release.yml`'s pages job). Nothing private goes into commits.
 - The app also builds for web pages (wasm32 + wasm-bindgen, `tools/build-web.sh`, `web/index.html`):
   `store.rs` keeps saves in localStorage there, and the GPU starts asynchronously (a user event).

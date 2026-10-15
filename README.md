@@ -11,7 +11,7 @@ window on macOS, Windows and Linux.
 
 ## Playing
 
-**Play it in your browser:** <https://kdylanhayes.github.io/mystery-house-port/>
+**Play it in your browser:** <https://mh.dylanhayes.xyz/>
 
 The [releases](https://github.com/kDylanHayes/mystery-house-port/releases) have the game ready
 to run:

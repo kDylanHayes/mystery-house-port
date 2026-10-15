@@ -1,6 +1,6 @@
 # Builds the game for macOS (one app for Apple silicon and Intel), Windows, Linux and web pages
 # (a static folder for any web server), and puts the web build on the project's GitHub Pages
-# site (https://kdylanhayes.github.io/mystery-house-port/). Pushing a
+# site (https://mh.dylanhayes.xyz/). Pushing a
 # tag v* publishes them as a GitHub release and deploys the site; running the workflow by hand
 # builds and collects them without publishing (the packages are kept as the run's artifacts), and
 # deploys the site only when asked (the pages input).

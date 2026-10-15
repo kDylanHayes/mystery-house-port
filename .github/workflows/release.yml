@@ -86,7 +86,7 @@ jobs:
 
       - uses: actions/upload-artifact@v7
         with:
-          name: ${{ matrix.name }}
+          name: package-${{ matrix.name }}
           path: |
             mystery-house-*.zip
             mystery-house-*.tar.gz
@@ -115,7 +115,7 @@ jobs:
 
       - uses: actions/upload-artifact@v7
         with:
-          name: web
+          name: package-web
           path: mystery-house-*-web.zip
           if-no-files-found: error
 
@@ -125,6 +125,8 @@ jobs:
     steps:
       - uses: actions/download-artifact@v8
         with:
+          # the packages only (the pages job uploads an artifact of its own)
+          pattern: package-*
           path: packages
           merge-multiple: true
 
@@ -169,7 +171,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v8
         with:
-          name: web
+          name: package-web
           path: package
 
       - name: The site is the web package's folder

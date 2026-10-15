@@ -15,6 +15,9 @@ const MAX_Y: u8 = 0xA0;
 #[derive(Clone)]
 pub struct Screen {
     pixels: Vec<u8>,
+    /// Each hi-res byte's colour-group bit, 40 per row. The game draws in white with the bit
+    /// clear; only a title picture sets it.
+    colour_bits: Vec<u8>,
     x: i32,
     y: i32,
     sx: i32,
@@ -25,6 +28,7 @@ impl Default for Screen {
     fn default() -> Self {
         Screen {
             pixels: vec![0; WIDTH * HEIGHT],
+            colour_bits: vec![0; WIDTH / 7 * HEIGHT],
             x: 0,
             y: 0,
             sx: 0,
@@ -39,6 +43,11 @@ impl Screen {
         &self.pixels
     }
 
+    /// The colour-group bit of each 7-pixel group, 40 per row (for NTSC colour).
+    pub fn colour_bits(&self) -> &[u8] {
+        &self.colour_bits
+    }
+
     /// The 280 x 160 picture area, as the pixel hashes take it.
     pub fn picture_area(&self) -> &[u8] {
         &self.pixels[..WIDTH * PICTURE_HEIGHT]
@@ -47,6 +56,13 @@ impl Screen {
     /// HGR: clear the page. The pen stays where it was.
     pub fn clear(&mut self) {
         self.pixels.fill(0);
+        self.colour_bits.fill(0);
+    }
+
+    /// Put a whole page on the screen (a title picture loaded over it).
+    pub fn load_page(&mut self, pixels: &[u8], colour_bits: &[u8]) {
+        self.pixels.copy_from_slice(pixels);
+        self.colour_bits.copy_from_slice(colour_bits);
     }
 
     /// A pixel off the screen is dropped (the game never draws there).

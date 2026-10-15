@@ -8,8 +8,8 @@ overview.
   `crates/play` (`mh-play`, the script runner). `cargo test` plays every script. The engine
   stays headless and faithful; front-end features go in a front-end crate or behind `Options`,
   off by default, so the scripts stay the definition of done.
-- v1 features agreed with the user: the boot sequence shown or skipped (title pictures to be
-  exported from the decomp first), instructions on demand, integer scaling/fullscreen/4:3,
+- v1 features agreed with the user: the boot sequence shown or skipped (the titles are in
+  `gamedata.json` since decomp v1.1), instructions on demand, integer scaling/fullscreen/4:3,
   white-on-black and NTSC colour display, line editing with upper-casing and history, the
   bug-fix option, save slots, the original's `SAVED GAME` format, `--script` play. Ask which
   windowing crate before writing the front end.

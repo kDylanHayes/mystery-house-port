@@ -9,7 +9,7 @@ tests, or is the source (`src/adventure.s`, routine names in brackets) read dire
 
 | | |
 |---|---|
-| `assets/text/gamedata.json` | the whole database: words, messages, rooms, objects, rules, pictures as strokes, shapes as vectors, floor slots, the starting state, the disk's saved game, the loader's menu and instruction pages (fields below) |
+| `assets/text/gamedata.json` | the whole database: words, messages, rooms, objects, rules, pictures as strokes, shapes as vectors, floor slots, the starting state, the disk's saved game, the loader's menu and instruction pages, the two title pictures (fields below) |
 | `tools/pictures.py` | the reference renderer: the game's line drawing, pictures, shapes and room composition, pixel for pixel (`Canvas`, `draw_picture`, `draw_shape`, `room_canvas`) |
 | `tests/play/*.txt` | conformance scripts: the solution, a tour of every room, every death and ending, unknown words, the loader and instructions, the bug fixes ("Checking a port") |
 | `tests/play/*.expected.txt` | what the game prints for each script |
@@ -28,7 +28,7 @@ public domain; a port can show them or start straight at the game.
 1. **`HELLO`** (Applesoft, `src/basic/HELLO.bas`): a scrolling credit for The Public Domain
    Exchange, then `RUN MYSTERY.HELLO`.
 2. **`MYSTERY.HELLO`** (`src/basic/MYSTERY.HELLO.bas`): shows the Sierra title picture, which
-   it loads with `AUTO LOAD OBJ` (`assets/screens/title_1987.png`). After a pause it prints the
+   it loads with `AUTO LOAD OBJ` (`titles.1987`, `assets/screens/title_1987.png`). After a pause it prints the
    1987 public-domain notice, waits for a key and starts the loader.
 3. **`AUTO LOAD OBJ`** (`src/autoload.s`): the title picture with four text lines below it.
    It prints `loader.menu` (19 empty lines, then `ENTER G FOR GAME OR I FOR INSTRUCTIONS`) and
@@ -39,9 +39,21 @@ public domain; a port can show them or start straight at the game.
      TO BEGIN PLAY`) and waiting for a line; then the game;
    - anything else prints the menu again.
 
-   The game is started with `BRUN ADVENTURE`. As it loads over the hi-res page, the 1980
-   On-Line Systems title shows for a moment (`assets/screens/title_1980.png`), then
+   The game is started with a carriage return and `BRUN ADVENTURE` (so one empty line
+   comes before the game's own five). As it loads over the hi-res page, the 1980 On-Line
+   Systems title shows for a moment (`titles.1980`, `assets/screens/title_1980.png`), then
    `init_game` clears the screen.
+
+**The title pictures** are in `gamedata.json` as `titles.1987` and `titles.1980`, each the
+whole 280 x 192 hi-res page:
+- `pixels`: 192 rows from the top, each 35 bytes in hex, eight pixels a byte with the leftmost
+  in bit 7 (1 = lit).
+- `colour_bits`: 192 rows, each 5 bytes in hex: for the row's 40 groups of 7 pixels, the hi-res
+  byte's bit 7 (leftmost group in bit 7), which shifts the NTSC artefact colours of that group
+  (`pictures.hires_color`). The 1987 title has none set; the 1980 title uses them. A
+  black-and-white port can ignore them.
+
+Drawn from `pixels`, the 1987 title gives `intro.pixels.txt`'s hashes at the loader's prompts.
 
 ## The screen
 
@@ -176,7 +188,7 @@ repeat:
 | `OBJ_IN_ROOM x y` | object x's room is y (254 = carried, 253 = nowhere) |
 | `TURNS_GT n` | the turn counter is below 256 and greater than n (from turn 256 it is never true: a bug) |
 | `SWITCH_EQ x y` | switch x equals y |
-| `VIEW_IS n` | the room's current picture is n |
+| `VIEW_IS n` | the picture on screen (`shown_picture`) is n: `draw_room` sets it to the room's current picture at the start of each turn, so a view changed during the turn counts from the next one |
 | `OBJ_PIC_IS x y` | object x's picture is y |
 
 - Actions:
@@ -222,6 +234,7 @@ fields:
 |---|---|
 | `$0852` | current room |
 | `$0853-$0854` | turn counter (low, high) |
+| `$0834`, `$0835`, `$0839` | the last verb and noun, the picture on screen (`shown_picture`) |
 | `$083A-$084D` | the 20 switches |
 | `$089D` | the light: 0 on, 1 off |
 | `$0900-` | the object table, records as in NOTES.md ("Rooms and objects"), in `gamedata.json` order (each object's `addr`) |
@@ -235,7 +248,8 @@ The disk comes with a saved game, and `RESTORE GAME` before any `SAVE GAME` load
 save slot: `room`, `turn`, `switches`, `light`, every object's `OROOM`, `OPIC`, `OXCOORD`,
 `OYCOORD` and `OSTATUS`, and every room's `RBASEPIC` and `RCURPIC`. It also has `verb` and
 `noun`: the save file restores the last command's words too, and the turn rules that run
-after a `RESTORE GAME` see those (here `SAVE GAME`, verb 34 and noun 88). `deaths.txt` and
+after a `RESTORE GAME` see those (here `SAVE GAME`, verb 34 and noun 88), and `shown_picture`,
+the picture on screen that `VIEW_IS` tests until the next turn draws the room. `deaths.txt` and
 `bugfix.txt` start from it.
 
 ## Checking a port
@@ -245,7 +259,7 @@ Play each script in `tests/play/`, typing each command when the game asks for in
 | Script | Start at | Compare with |
 |---|---|---|
 | `walkthrough.txt`, `errors.txt`, `house.txt`, `deaths.txt` | the game (`init_game`) | `<script>.expected.txt`, `<script>.pixels.txt` |
-| `intro.txt` | the loader's menu (step 3 of "Before the game") | `intro.expected.txt`; `intro.pixels.txt` from the first `ENTER COMMAND` on (before that it hashes the 1987 title picture's memory) |
+| `intro.txt` | the loader's menu (step 3 of "Before the game") | `intro.expected.txt`, `intro.pixels.txt` (at the loader's prompts the screen is the 1987 title, `titles.1987`) |
 | `bugfix.txt` | the game | a faithful port: `bugfix.original.expected.txt`, `bugfix.original.pixels.txt`; with the bug fixes: `bugfix.expected.txt`, `bugfix.pixels.txt` |
 
 In a script, lines starting `#` are comments and a line `<CR>` means RETURN on an empty line.

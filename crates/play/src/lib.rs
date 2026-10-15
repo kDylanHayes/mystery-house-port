@@ -184,8 +184,7 @@ impl Check {
     }
 }
 
-/// Play a script and compare it with its expected files. Pixel hashes at the loader's
-/// prompts are not compared: they hash the 1987 title picture's memory (PORTING.md).
+/// Play a script and compare it with its expected files.
 pub fn check(data: &GameData, decomp: &Path, script: &Script) -> Check {
     let play_dir = decomp.join("play");
     let read = |name: String| {
@@ -238,10 +237,7 @@ fn compare_transcript(expected: &[&str], got: &[String]) -> Option<String> {
 
 fn compare_pixels(expected: &[&str], recording: &Recording) -> Option<String> {
     let mut bad = Vec::new();
-    for (i, (prompt, hash)) in recording.prompts.iter().enumerate() {
-        if *prompt == Prompt::Loader {
-            continue;
-        }
+    for (i, (_, hash)) in recording.prompts.iter().enumerate() {
         match expected.get(i) {
             Some(e) if e == hash => {}
             e => bad.push((i, e.copied().unwrap_or("(none)"), hash)),

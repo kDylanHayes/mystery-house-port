@@ -30,6 +30,9 @@ pub struct GameData {
     pub floor_slots: Vec<(u8, u8)>,
     pub saved_game: SavedGame,
     pub loader: Loader,
+    /// The 1987 Sierra title (`AUTO LOAD OBJ`) and the 1980 On-Line Systems title (`ADVENTURE`).
+    pub title_1987: Title,
+    pub title_1980: Title,
 }
 
 pub struct Room {
@@ -122,10 +125,20 @@ pub struct SavedGame {
     pub light: bool,
     pub verb: u8,
     pub noun: u8,
+    /// The picture on screen, which `VIEW_IS` tests.
+    pub shown_picture: u8,
     /// (OBJECTNO, OROOM, OPIC, OXCOORD, OYCOORD, OSTATUS)
     pub objects: Vec<(u8, u8, u8, u8, u8, u8)>,
     /// (RROOMNO, RBASEPIC, RCURPIC)
     pub rooms: Vec<(u8, u8, u8)>,
+}
+
+/// A title picture: a whole 280 x 192 hi-res page.
+pub struct Title {
+    /// One byte per pixel (1 lit), row by row from the top.
+    pub pixels: Vec<u8>,
+    /// Each byte's colour-group bit (bit 7), 40 per row: it shifts the NTSC artefact colours.
+    pub colour_bits: Vec<u8>,
 }
 
 /// The 1987 loader's text (`AUTO LOAD OBJ`).
@@ -165,6 +178,13 @@ mod json {
         floor_slots: Vec<[u8; 2]>,
         saved_game: SavedGame,
         loader: Loader,
+        titles: HashMap<String, Title>,
+    }
+
+    #[derive(Deserialize)]
+    struct Title {
+        pixels: Vec<String>,
+        colour_bits: Vec<String>,
     }
 
     #[derive(Deserialize)]
@@ -225,6 +245,7 @@ mod json {
         light: bool,
         verb: u8,
         noun: u8,
+        shown_picture: u8,
         objects: Vec<SavedObject>,
         rooms: Vec<SavedRoom>,
     }
@@ -260,6 +281,33 @@ mod json {
                     .map_err(|_| format!("{what} {k:?}"))
             })
             .collect()
+    }
+
+    /// Rows of hex bytes, leftmost bit first, as one byte per bit.
+    fn bits(rows: &[String], width: usize, what: &str) -> Result<Vec<u8>, String> {
+        let mut out = Vec::with_capacity(rows.len() * width);
+        for row in rows {
+            if row.len() * 4 != width {
+                return Err(format!("{what}: a row of {} hex digits", row.len()));
+            }
+            for i in (0..row.len()).step_by(2) {
+                let b =
+                    u8::from_str_radix(&row[i..i + 2], 16).map_err(|e| format!("{what}: {e}"))?;
+                out.extend((0..8).rev().map(|k| (b >> k) & 1));
+            }
+        }
+        Ok(out)
+    }
+
+    fn title(titles: &HashMap<String, Title>, name: &str) -> Result<super::Title, String> {
+        let t = titles.get(name).ok_or_else(|| format!("no title {name}"))?;
+        if t.pixels.len() != 192 || t.colour_bits.len() != 192 {
+            return Err(format!("title {name} is not 192 rows"));
+        }
+        Ok(super::Title {
+            pixels: bits(&t.pixels, 280, name)?,
+            colour_bits: bits(&t.colour_bits, 40, name)?,
+        })
     }
 
     fn condition(op: &Op) -> Result<Condition, String> {
@@ -410,6 +458,7 @@ mod json {
                     light: s.light,
                     verb: s.verb,
                     noun: s.noun,
+                    shown_picture: s.shown_picture,
                     objects: s
                         .objects
                         .into_iter()
@@ -425,6 +474,8 @@ mod json {
                     menu: self.loader.menu,
                     pages: self.loader.pages,
                 },
+                title_1987: title(&self.titles, "1987")?,
+                title_1980: title(&self.titles, "1980")?,
             })
         }
     }

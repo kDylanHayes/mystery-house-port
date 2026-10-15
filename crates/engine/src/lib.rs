@@ -13,7 +13,7 @@
 mod data;
 mod screen;
 
-pub use data::{Action, Condition, GameData, Rule};
+pub use data::{Action, Condition, GameData, Rule, Title};
 pub use screen::{Screen, HEIGHT, PICTURE_HEIGHT, WIDTH};
 
 use data::{ANY, CARRIED, OFIXED, OMOVED};
@@ -175,7 +175,7 @@ impl<'a> Game<'a> {
             text_page: false,
         };
         match start {
-            Start::Loader => game.show_menu(),
+            Start::Loader => game.start_loader(),
             Start::Game => game.new_game(),
         }
         game
@@ -208,8 +208,7 @@ impl<'a> Game<'a> {
                 current_picture,
             };
         }
-        // The file was saved after a redraw of its room.
-        state.shown_picture = state.rooms[state.room as usize - 1].current_picture;
+        state.shown_picture = s.shown_picture;
         state
     }
 
@@ -283,6 +282,13 @@ impl<'a> Game<'a> {
 
     // ---- the loader -------------------------------------------------------------------------
 
+    /// `MYSTERY.HELLO` has loaded `AUTO LOAD OBJ`, whose `$2000-$3FFF` is the 1987 title.
+    fn start_loader(&mut self) {
+        let t = &self.data.title_1987;
+        self.screen.load_page(&t.pixels, &t.colour_bits);
+        self.show_menu();
+    }
+
     fn show_menu(&mut self) {
         let menu = self.data.loader.menu.join("\n");
         self.print(&menu);
@@ -296,9 +302,12 @@ impl<'a> Game<'a> {
         self.phase = Phase::Page(n);
     }
 
-    /// `\r` and `BRUN ADVENTURE`.
+    /// `\r` and `BRUN ADVENTURE`, which loads the 1980 title over the screen; `init_game`
+    /// and the first `draw_room` then clear it. A front end may hold it for a moment.
     fn run_adventure(&mut self) {
         self.print("\n");
+        let t = &self.data.title_1980;
+        self.screen.load_page(&t.pixels, &t.colour_bits);
         self.new_game();
     }
 

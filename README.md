@@ -29,18 +29,15 @@ transcript (and the pixel hash at every prompt).
 | `crates/engine` (`mystery-house`) | the engine: loads `gamedata.json`, runs the loader and the turn loop, draws the screen; headless, fed one line at a time |
 | `crates/play` (`mh-play`) | the script runner and the `cargo test` checks |
 
-Pixel hashes at the loader's prompts (`intro.txt`) are not compared yet: they hash the 1987
-title picture, which is not exported from the decompilation in a port-friendly form.
-
 ## What the port works from
 
-`decomp/` is a pinned copy of what the decompilation provides for ports, from its `v1.0` tag
-(`decomp/MANIFEST` records the commit and every file's SHA-256):
+`decomp/` is a pinned copy of what the decompilation provides for ports, from its `v1.1` tag
+(`decomp/MANIFEST` records the tag, the commit and every file's SHA-256):
 
 | File | |
 |---|---|
 | `decomp/PORTING.md` | the engine specification: screen, line drawing, pictures, shapes, text, the turn loop, parser, rules, saving, the start-up sequence, and how to check a port |
-| `decomp/gamedata.json` | all the game's data: words, messages, rooms, objects, rules, pictures as strokes, shapes, the starting state, the disk's saved game, the loader's pages |
+| `decomp/gamedata.json` | all the game's data: words, messages, rooms, objects, rules, pictures as strokes, shapes, the starting state, the disk's saved game, the loader's pages, the two title pictures |
 | `decomp/play/*.txt` | conformance scripts: the solution, a tour of every room, every death and ending, unknown words, the loader and instructions, the bug fixes |
 | `decomp/play/*.expected.txt` | what the original prints for each script |
 | `decomp/play/*.pixels.txt` | a hash of what the player sees at every prompt |
@@ -54,7 +51,7 @@ fixes the decompilation documents may be offered as an option, checked by `bugfi
 Fixes to the specification or the data go into the decompilation, which gets a new tag; then:
 
 ```bash
-tools/sync-decomp.sh ../mystery-house-decomp v1.1
+tools/sync-decomp.sh ../mystery-house-decomp v1.2
 ```
 
 ```bash

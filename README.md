@@ -76,7 +76,7 @@ starting from a save file and writing the save file at the end.
 
 ## What the port works from
 
-`decomp/` is a pinned copy of what the decompilation provides for ports, from its `v1.1` tag
+`decomp/` is a pinned copy of what the decompilation provides for ports, from its `v1.4` tag
 (`decomp/MANIFEST` records the tag, the commit and every file's SHA-256):
 
 | File | |

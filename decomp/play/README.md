@@ -7,7 +7,7 @@ empty line. In the transcripts a cleared text screen (the loader's HOME) is a li
 | Script | What it plays |
 |---|---|
 | `walkthrough.txt` | the complete solution, ending with the winning message |
-| `errors.txt` | words the game does not know (the replies are patched into text in the code) |
+| `errors.txt` | words the game does not know (the replies are patched into text in the code), then refusals: a rule-less command, a wall, GET of what is not here, DROP of what is not carried, GET of what does not move |
 | `house.txt` | a tour of every room trying its rules: doors and gates in each state, the refusals, water, the trunk, the hidden wall, the tunnel and the forest |
 | `deaths.txt` | every death and ending, darkness and the match, the first visit to the hall, SAVE GAME and RESTORE GAME (including the saved game on the disk) |
 | `intro.txt` | from the 1987 loader (`play.py --boot`): its menu, the six instruction pages, then into the game, with RETURN on an empty line and words cut to 8 letters |

@@ -5,9 +5,32 @@ public domain since 1987), built from the
 [Mystery House decompilation](https://github.com/kDylanHayes/mystery-house-decompilation)
 rather than from the Apple II code.
 
-**Status:** just split off from the decompilation. The language and platform are not decided
-yet, so there is no engine code. What is here is everything the port will be built and checked
-against.
+**Status:** the engine, in Rust, plays every conformance script exactly as the original
+(transcripts and pixel hashes), with the documented bug fixes as an option. There is no front
+end yet: the game runs headless.
+
+## Building and checking
+
+```bash
+cargo test
+```
+
+```bash
+cargo run --release -p mh-play
+```
+
+The first plays every script in `decomp/play/` as a test; the second does the same and prints
+the first difference of each script that fails. `mh-play house deaths` checks only those, and
+`mh-play --play <file> [--loader] [--bugfix] [--pixels]` plays any command file and prints the
+transcript (and the pixel hash at every prompt).
+
+| Crate | |
+|---|---|
+| `crates/engine` (`mystery-house`) | the engine: loads `gamedata.json`, runs the loader and the turn loop, draws the screen; headless, fed one line at a time |
+| `crates/play` (`mh-play`) | the script runner and the `cargo test` checks |
+
+Pixel hashes at the loader's prompts (`intro.txt`) are not compared yet: they hash the 1987
+title picture, which is not exported from the decompilation in a port-friendly form.
 
 ## What the port works from
 

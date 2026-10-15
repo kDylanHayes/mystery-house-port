@@ -1,0 +1,11 @@
+[package]
+name = "mystery-house"
+version = "0.1.0"
+description = "The Mystery House engine: the database, the turn loop and the screen"
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"

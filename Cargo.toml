@@ -1,0 +1,8 @@
+[workspace]
+resolver = "2"
+members = ["crates/engine", "crates/play"]
+
+[workspace.package]
+edition = "2021"
+license = "Unlicense"
+publish = false

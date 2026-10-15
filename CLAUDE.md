@@ -4,7 +4,15 @@ A port of Mystery House (Apple II, 1980; public domain since 1987) built from th
 at ../mystery-house-decomp (GitHub kDylanHayes/mystery-house-decompilation). README.md has the
 overview.
 
-- The language and platform are not decided yet: ask before writing engine code.
+- Rust, as a Cargo workspace: `crates/engine` (the headless engine, crate `mystery-house`) and
+  `crates/play` (`mh-play`, the script runner). `cargo test` plays every script. The engine
+  stays headless and faithful; front-end features go in a front-end crate or behind `Options`,
+  off by default, so the scripts stay the definition of done.
+- v1 features agreed with the user: the boot sequence shown or skipped (title pictures to be
+  exported from the decomp first), instructions on demand, integer scaling/fullscreen/4:3,
+  white-on-black and NTSC colour display, line editing with upper-casing and history, the
+  bug-fix option, save slots, the original's `SAVED GAME` format, `--script` play. Ask which
+  windowing crate before writing the front end.
 - `decomp/` is a pinned copy from a decomp tag (`decomp/MANIFEST`). Never edit it. A fix to the
   specification or the data goes into the decompilation (its PORTING.md, gamedata.json or
   tests/play), gets a new tag there, and comes here with `tools/sync-decomp.sh <decomp> <tag>`.

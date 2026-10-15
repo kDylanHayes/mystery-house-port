@@ -1,4 +1,5 @@
-# Every push and pull request: the pinned copy of the decompilation's files is intact.
+# Every push and pull request: the pinned copy of the decompilation's files is intact, and the
+# port plays every script in decomp/play/ as the original does.
 name: check
 
 on:
@@ -13,3 +14,21 @@ jobs:
 
       - name: decomp/ matches its MANIFEST
         run: tools/sync-decomp.sh --verify
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+
+      - name: Format
+        run: cargo fmt --check
+
+      - name: Lint
+        run: cargo clippy --all-targets -- -D warnings
+
+      - name: Every script in decomp/play/ gives the expected transcript and pixel hashes
+        run: cargo test

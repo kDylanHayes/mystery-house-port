@@ -10,8 +10,9 @@ pub type Rgb = [u8; 3];
 
 const BLACK: Rgb = [0, 0, 0];
 const WHITE: Rgb = [255, 255, 255];
-// The NTSC artefact colours of the decompilation's pictures.hires_color: a lone dot in an
-// even column is green (colour group 0) or orange (group 1), in an odd one violet or blue.
+// The NTSC artefact colours (decomp/PORTING.md, "The screen"): a lone dot in an even column is
+// violet (colour group 0) or blue (group 1), in an odd one green or orange, as Applesoft's
+// HCOLOR bytes have it ($55 violet, $2A green, $D5 blue, $AA orange).
 const GREEN: Rgb = [20, 245, 60];
 const VIOLET: Rgb = [255, 68, 253];
 const ORANGE: Rgb = [255, 106, 60];
@@ -51,10 +52,10 @@ pub enum Aspect {
 /// two dots is filled with the colour between them.
 fn ntsc_row(bits: &[u8], groups: &[u8], out: &mut [Rgb]) {
     let colour = |x: usize, on_even: bool| match (groups[x / 7] != 0, on_even) {
-        (false, true) => GREEN,
-        (false, false) => VIOLET,
-        (true, true) => ORANGE,
-        (true, false) => BLUE,
+        (false, true) => VIOLET,
+        (false, false) => GREEN,
+        (true, true) => BLUE,
+        (true, false) => ORANGE,
     };
     for x in 0..W {
         let left = x > 0 && bits[x - 1] != 0;
@@ -200,8 +201,34 @@ mod tests {
         ntsc_row(&bits, &groups, &mut out);
         assert_eq!(
             (out[10], out[20], out[21], out[11]),
-            (GREEN, WHITE, WHITE, BLACK)
+            (VIOLET, WHITE, WHITE, BLACK)
         );
+    }
+
+    #[test]
+    fn colours_are_applesofts() {
+        // rows filled as HCOLOR fills them (decomp tests/test_pictures.py does the same)
+        let cases = [
+            ([0x55, 0x2A], VIOLET),
+            ([0x2A, 0x55], GREEN),
+            ([0xD5, 0xAA], BLUE),
+            ([0xAA, 0xD5], ORANGE),
+        ];
+        for (pair, colour) in cases {
+            let bytes: Vec<u8> = (0..40).map(|c| pair[c % 2]).collect();
+            let bits: Vec<u8> = bytes
+                .iter()
+                .flat_map(|b| (0..7).map(move |k| (b >> k) & 1))
+                .collect();
+            let groups: Vec<u8> = bytes.iter().map(|b| b >> 7).collect();
+            let mut out = vec![BLACK; W];
+            ntsc_row(&bits, &groups, &mut out);
+            assert!(
+                out.iter().all(|&c| c == colour || c == BLACK),
+                "{pair:02X?}"
+            );
+            assert!(out.contains(&colour));
+        }
     }
 
     #[test]

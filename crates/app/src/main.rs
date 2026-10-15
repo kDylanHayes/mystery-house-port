@@ -641,6 +641,7 @@ mod tests {
         };
         let mut app = App::new(data, settings, store(), None);
         shot(&mut app, "loader", Colour::White);
+        shot(&mut app, "loader_ntsc", Colour::Ntsc);
         app.editor.insert("G");
         let (l, p) = app.editor.enter(false);
         app.page = p;

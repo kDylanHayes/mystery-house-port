@@ -1,9 +1,9 @@
 # Copied from the Mystery House decompilation by tools/sync-decomp.sh; do not edit.
 # https://github.com/kDylanHayes/mystery-house-decompilation
-# tag v1.4, commit 2fcad2e083ceff6a66931d6c5e90ac21f5bbf29a
+# tag v1.5, commit 74c785835fe9f35acf1f46c88be800c1c1c90484
 # sha256 path
 03aabfbfbb9e9276bbb45651f6790e283800ba8d58879bcc0c8d7988c5a48deb gamedata.json
-c762dd249c0af607f0bb8ef412ea702e208c425ea347f518fe79a85cbd35e2f2 PORTING.md
+947038ad27185f2a036ce785f9df2619d92fe18dec3728123b83030cc4b9f2cc PORTING.md
 6b0382b16279f26ff69014300541967a356a666eb0b91b422f6862f6b7dad17e LICENSE
 d302d767a840743d710322285ee329283a12f6bca02c4c4bed5db948b7817ff9 play/README.md
 b6a182cf0159dca5e55785be956d09787268011f6e72c62ac6f544af563749a4 play/bugfix.expected.txt

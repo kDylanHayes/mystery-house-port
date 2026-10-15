@@ -81,7 +81,9 @@ An Apple II in hi-res mixed mode:
 - **Text:** four 40-column lines below the picture.
 
 The game draws only in white, so a port can treat the picture as one bit per pixel. The real
-machine shows NTSC artefact colours on single pixels, which `pictures.hires_color` imitates.
+machine shows NTSC artefact colours on single pixels, which `pictures.hires_color` imitates: a
+lone dot in an even column is violet (blue when its byte's bit 7 is set), in an odd column green
+(orange), and dots side by side are white.
 They are a property of the display, not of the game.
 
 ### Lines (`hglin`, Applesoft HGLIN)

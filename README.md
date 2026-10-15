@@ -11,6 +11,17 @@ window on macOS, Windows and Linux.
 
 ## Playing
 
+The [releases](https://github.com/kDylanHayes/mystery-house-port/releases) have the game ready
+to run:
+
+| System | Package | |
+|---|---|---|
+| macOS 11 or later (Apple silicon and Intel) | `mystery-house-<version>-macos-universal.zip` | `Mystery House.app`; not signed, so the first time, Control-click it and choose Open |
+| Windows (x86-64) | `mystery-house-<version>-windows-x86_64.zip` | `mystery-house.exe`; not signed, so SmartScreen may ask first (More info, Run anyway) |
+| Linux (x86-64, X11 or Wayland) | `mystery-house-<version>-linux-x86_64.tar.gz` | `./mystery-house` |
+
+Or build and run it from the source (with [Rust](https://rustup.rs)):
+
 ```bash
 cargo run --release -p mystery-house-app
 ```
@@ -79,6 +90,16 @@ starting from a save file and writing the save file at the end.
 The port is correct when every script gives the expected transcript and pixel hashes
 (`decomp/PORTING.md`, "Checking a port"). The original's bugs are part of its behaviour; the
 fixes the decompilation documents may be offered as an option, checked by `bugfix.txt`.
+
+## Releasing
+
+Pushing a tag `v*` runs `.github/workflows/release.yml`: on macOS, Windows and Linux it runs the
+tests, builds the game (on macOS one app for both processors) and publishes the three packages
+as a GitHub release. Running the workflow by hand builds the packages without publishing them.
+
+```bash
+git tag v1.0.1 && git push origin v1.0.1
+```
 
 ## Updating from the decompilation
 

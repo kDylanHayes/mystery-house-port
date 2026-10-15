@@ -1,0 +1,2 @@
+# decomp/ is checked byte for byte against its MANIFEST: no line-ending conversion on checkout
+decomp/** -text

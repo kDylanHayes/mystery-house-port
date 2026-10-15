@@ -1,0 +1,114 @@
+# Builds the game for macOS (one app for Apple silicon and Intel), Windows and Linux. Pushing a
+# tag v* publishes them as a GitHub release; running the workflow by hand only builds them (the
+# packages are kept as the run's artifacts).
+name: release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - os: macos-latest
+            name: macos-universal
+          - os: windows-latest
+            name: windows-x86_64
+          - os: ubuntu-latest
+            name: linux-x86_64
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ runner.os == 'macOS' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+
+      - name: The scripts pass on this system before anything is packaged
+        run: cargo test --release
+
+      - name: The version (the tag, or the commit for a trial run)
+        id: version
+        shell: bash
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then v="${GITHUB_REF#refs/tags/}"; else v="dev-${GITHUB_SHA::7}"; fi
+          echo "version=$v" >> "$GITHUB_OUTPUT"
+          echo "package=mystery-house-$v-${{ matrix.name }}" >> "$GITHUB_OUTPUT"
+
+      - name: Package for macOS
+        if: runner.os == 'macOS'
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+          PACKAGE: ${{ steps.version.outputs.package }}
+        run: |
+          cargo build --release -p mystery-house-app --target aarch64-apple-darwin
+          cargo build --release -p mystery-house-app --target x86_64-apple-darwin
+          app="dist/Mystery House.app"
+          mkdir -p "$app/Contents/MacOS"
+          lipo -create -output "$app/Contents/MacOS/mystery-house" \
+            target/aarch64-apple-darwin/release/mystery-house \
+            target/x86_64-apple-darwin/release/mystery-house
+          sed "s/@VERSION@/${VERSION#v}/" tools/Info.plist > "$app/Contents/Info.plist"
+          cp README.md LICENSE dist/
+          (cd dist && ditto -c -k --keepParent "Mystery House.app" "../$PACKAGE.zip" && zip -q "../$PACKAGE.zip" README.md LICENSE)
+
+      - name: Package for Windows
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          cargo build --release -p mystery-house-app
+          New-Item -ItemType Directory dist | Out-Null
+          Copy-Item target/release/mystery-house.exe, README.md, LICENSE dist/
+          Compress-Archive -Path dist/* -DestinationPath "${{ steps.version.outputs.package }}.zip"
+
+      - name: Package for Linux
+        if: runner.os == 'Linux'
+        run: |
+          cargo build --release -p mystery-house-app
+          mkdir -p "dist/${{ steps.version.outputs.package }}"
+          cp target/release/mystery-house README.md LICENSE "dist/${{ steps.version.outputs.package }}/"
+          tar -C dist -czf "${{ steps.version.outputs.package }}.tar.gz" "${{ steps.version.outputs.package }}"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.name }}
+          path: |
+            mystery-house-*.zip
+            mystery-house-*.tar.gz
+          if-no-files-found: error
+
+  publish:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: packages
+          merge-multiple: true
+
+      - name: The release, with the three packages
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" packages/* --repo "$GITHUB_REPOSITORY" \
+            --title "Mystery House $GITHUB_REF_NAME" --notes-file - <<'EOF'
+          Mystery House (On-Line Systems, 1980; public domain since 1987), ported from the
+          decompilation. Download the package for your system:
+
+          - **macOS** (Apple silicon and Intel): unzip and open `Mystery House.app`. It is not
+            signed, so the first time, Control-click it and choose Open (or run
+            `xattr -dr com.apple.quarantine "Mystery House.app"`).
+          - **Windows**: unzip and run `mystery-house.exe`. It is not signed, so SmartScreen may
+            ask first: More info, then Run anyway.
+          - **Linux** (x86-64, X11 or Wayland): untar and run `./mystery-house`.
+
+          The README in each package lists the keys and options.
+          EOF

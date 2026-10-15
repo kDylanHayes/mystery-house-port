@@ -1,5 +1,5 @@
 # Every push and pull request: the pinned copy of the decompilation's files is intact, and the
-# port plays every script in decomp/play/ as the original does.
+# port plays every script in decomp/play/ as the original does, on Linux, macOS and Windows.
 name: check
 
 on:
@@ -10,21 +10,26 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: decomp/ matches its MANIFEST
         run: tools/sync-decomp.sh --verify
 
   test:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: clippy, rustfmt
 
       - name: Format
+        if: runner.os == 'Linux'
         run: cargo fmt --check
 
       - name: Lint

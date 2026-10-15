@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- The macOS app bundle's Info.plist; the release workflow fills in @VERSION@. -->
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleName</key>
+	<string>Mystery House</string>
+	<key>CFBundleDisplayName</key>
+	<string>Mystery House</string>
+	<key>CFBundleIdentifier</key>
+	<string>io.github.kdylanhayes.mystery-house</string>
+	<key>CFBundleExecutable</key>
+	<string>mystery-house</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>@VERSION@</string>
+	<key>CFBundleVersion</key>
+	<string>@VERSION@</string>
+	<key>LSMinimumSystemVersion</key>
+	<string>11.0</string>
+	<key>NSHighResolutionCapable</key>
+	<true/>
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.adventure-games</string>
+</dict>
+</plist>

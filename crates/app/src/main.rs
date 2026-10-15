@@ -1,5 +1,8 @@
 //! Mystery House in a window: the engine, the Apple II's screen and keyboard, save slots.
 
+// A release build on Windows opens no console window beside the game's.
+#![cfg_attr(all(windows, not(debug_assertions)), windows_subsystem = "windows")]
+
 mod boot;
 mod font;
 mod render;

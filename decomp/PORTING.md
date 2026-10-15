@@ -30,6 +30,25 @@ public domain; a port can show them or start straight at the game.
 2. **`MYSTERY.HELLO`** (`src/basic/MYSTERY.HELLO.bas`): shows the Sierra title picture, which
    it loads with `AUTO LOAD OBJ` (`titles.1987`, `assets/screens/title_1987.png`). After a pause it prints the
    1987 public-domain notice, waits for a key and starts the loader.
+
+   **`boot`** in `gamedata.json` is what these two programs show, as a timeline to replay
+   (`tools/boot.py` runs them on a model of the Monitor's text routines; HELLO's animations
+   come from narrowing the text window, so the text lands where the hardware puts it). Each
+   step has `at`, milliseconds since the start or since the last key, and one of:
+   - `display`: `"text"` (the 40 x 24 text page) or `"graphics"` (hi-res page 1, full screen);
+   - `hgr`: hi-res page 1 cleared to black;
+   - `row`, `col`, `text`, `char_ms`: `text` written on the text page from (`row`, `col`)
+     rightwards, one character every `char_ms` (Applesoft's `SPEED`);
+   - `title` `"1987"`, `ms`: the title picture arriving over `ms` in memory order, row y at
+     `$2000 + (y & 7) * $400 + ((y >> 3) & 7) * $80 + (y >> 6) * $28` (the disk's `BLOAD`);
+   - `key`, `row`, `col`: wait for a key (`GET`), with the flashing cursor at (`row`, `col`),
+     which is where the loader goes on printing;
+   - `loader`: the last step: start the loader (step 3), the text page left as it is.
+
+   The text page starts blank. The character delays follow from `SPEED`; the empty loops'
+   and the disk's speeds are estimates, and no test can check timing. `MYSTERY.HELLO`'s
+   `LIST` writes the program onto the hidden text page, which its `HOME` clears before it is
+   shown, so the timeline leaves it out.
 3. **`AUTO LOAD OBJ`** (`src/autoload.s`): the title picture with four text lines below it.
    It prints `loader.menu` (19 empty lines, then `ENTER G FOR GAME OR I FOR INSTRUCTIONS`) and
    reads a line:

@@ -8,6 +8,8 @@ use crate::render::{Aspect, Colour};
 
 pub const USAGE: &str = "usage: mystery-house [options]
 
+  --boot                     start as the disk does: HELLO's credits, the title and the
+                             1987 notice (any key skips ahead), then the loader
   --loader / --skip-loader   start at the 1987 loader's menu, or straight at the game
   --bugfix / --original      the documented bug fixes on, or the original's bugs
   --colour / --white         NTSC colour, or white on black
@@ -20,9 +22,20 @@ Keys: F1 instructions, F2 colour, F3 4:3, F11 or Alt+Return full screen,
 Cmd/Ctrl+1-9 save slot, Up/Down earlier commands, Esc clears the line.
 Saves are the original's SAVED GAME files, one per slot.";
 
+/// Where the game starts.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub enum Begin {
+    /// HELLO and MYSTERY.HELLO, then the loader.
+    Boot,
+    /// The loader's menu.
+    Loader,
+    /// The game itself.
+    Game,
+}
+
 #[derive(Clone, Debug, PartialEq)]
 pub struct Settings {
-    pub loader: bool,
+    pub begin: Begin,
     pub bugfix: bool,
     pub colour: Colour,
     pub aspect: Aspect,
@@ -33,7 +46,7 @@ pub struct Settings {
 impl Default for Settings {
     fn default() -> Self {
         Settings {
-            loader: true,
+            begin: Begin::Boot,
             bugfix: false,
             colour: Colour::White,
             aspect: Aspect::Square,
@@ -66,7 +79,15 @@ impl Settings {
     fn set(&mut self, key: &str, value: &str) {
         let on = value == "on";
         match key {
-            "loader" => self.loader = on,
+            "start" => {
+                self.begin = match value {
+                    "loader" => Begin::Loader,
+                    "game" => Begin::Game,
+                    _ => Begin::Boot,
+                }
+            }
+            // what the first version wrote
+            "loader" if !on => self.begin = Begin::Game,
             "bugfix" => self.bugfix = on,
             "colour" => {
                 self.colour = if value == "ntsc" {
@@ -97,8 +118,12 @@ impl Settings {
     pub fn save(&self, dir: &Path) -> std::io::Result<()> {
         let onoff = |b: bool| if b { "on" } else { "off" };
         let text = format!(
-            "loader = {}\nbugfix = {}\ncolour = {}\naspect = {}\nfullscreen = {}\nslot = {}\n",
-            onoff(self.loader),
+            "start = {}\nbugfix = {}\ncolour = {}\naspect = {}\nfullscreen = {}\nslot = {}\n",
+            match self.begin {
+                Begin::Boot => "boot",
+                Begin::Loader => "loader",
+                Begin::Game => "game",
+            },
             onoff(self.bugfix),
             if self.colour == Colour::Ntsc {
                 "ntsc"
@@ -123,8 +148,9 @@ impl Settings {
         let mut args = args.iter();
         while let Some(a) = args.next() {
             match a.as_str() {
-                "--loader" => self.loader = true,
-                "--skip-loader" => self.loader = false,
+                "--boot" => self.begin = Begin::Boot,
+                "--loader" => self.begin = Begin::Loader,
+                "--skip-loader" => self.begin = Begin::Game,
                 "--bugfix" => self.bugfix = true,
                 "--original" => self.bugfix = false,
                 "--colour" | "--color" => self.colour = Colour::Ntsc,

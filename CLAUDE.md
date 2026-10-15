@@ -12,8 +12,8 @@ overview.
 - v1 features agreed with the user: the boot sequence shown or skipped (the titles are in
   `gamedata.json` since decomp v1.1), instructions on demand, integer scaling/fullscreen/4:3,
   white-on-black and NTSC colour display, line editing with upper-casing and history, the
-  bug-fix option, save slots, the original's `SAVED GAME` format, `--script` play. Not yet: the
-  HELLO and MYSTERY.HELLO screens before the loader (their text is not exported from the decomp).
+  bug-fix option, save slots, the original's `SAVED GAME` format, `--script` play. The boot (HELLO and
+  MYSTERY.HELLO) replays `gamedata.json`'s `boot` timeline (decomp v1.3, `crates/app/src/boot.rs`).
 - The app's font is drawn for the port (`crates/app/src/font.rs`); the Apple's character ROM
   is not public domain.
 - `decomp/` is a pinned copy from a decomp tag (`decomp/MANIFEST`). Never edit it. A fix to the

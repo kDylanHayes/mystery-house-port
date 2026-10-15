@@ -15,8 +15,10 @@ window on macOS, Windows and Linux.
 cargo run --release -p mystery-house-app
 ```
 
-It starts at the 1987 loader's menu (`G` for the game, `I` for the instructions) over the
-Sierra title; the 1980 title shows for a moment as the game loads. Type commands as on the
+It starts as the disk does: HELLO's credit for The Public Domain Exchange, the Sierra title
+loading, the 1987 public-domain notice (a key goes on), then the loader's menu (`G` for the
+game, `I` for the instructions); the 1980 title shows for a moment as the game loads. Any key
+skips ahead to the notice, Esc to the loader. Type commands as on the
 Apple: two words, verb first (`GO STAIRS`, `LOOK SINK`); RETURN on an empty line flips to the
 text page and back.
 
@@ -36,7 +38,8 @@ format (`SAVED GAME 1` ... `SAVED GAME 9`, the 2255 bytes the Apple BSAVEs), so 
 and from an Apple II or an emulator; an empty slot holds the disk's saved game, as the original
 disk does. Saves and settings live in the platform's data folder (`~/Library/Application
 Support/Mystery House` on macOS); `mystery-house --help` lists the command-line options
-(`--skip-loader`, `--bugfix`, `--colour`, `--4:3`, `--fullscreen`, `--slot N`, `--dir PATH`).
+(`--boot`, `--loader`, `--skip-loader`, `--bugfix`, `--colour`, `--4:3`, `--fullscreen`,
+`--slot N`, `--dir PATH`).
 
 ## Building and checking
 

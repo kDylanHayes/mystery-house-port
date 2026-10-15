@@ -1,5 +1,6 @@
 //! Mystery House in a window: the engine, the Apple II's screen and keyboard, save slots.
 
+mod boot;
 mod font;
 mod render;
 mod settings;
@@ -18,8 +19,9 @@ use winit::event_loop::{ActiveEventLoop, ControlFlow, EventLoop};
 use winit::keyboard::{Key, ModifiersState, NamedKey};
 use winit::window::{Fullscreen, Window, WindowId};
 
+use boot::BootPlayer;
 use render::{Aspect, Colour, Rgb, View};
-use settings::Settings;
+use settings::{Begin, Settings};
 use text::{LineEditor, TextPage};
 
 /// How long the 1980 title stays up as the game starts (any key skips it).
@@ -37,6 +39,8 @@ struct App {
     editor: LineEditor,
     /// The instruction pages on demand (F1): which page.
     instructions: Option<usize>,
+    /// HELLO and MYSTERY.HELLO while they play, and when their clock started.
+    boot: Option<(BootPlayer, Instant)>,
     title_until: Option<Instant>,
     saves_seen: u32,
     screen: Vec<Rgb>,
@@ -48,11 +52,11 @@ struct App {
 
 impl App {
     fn new(data: &'static GameData, settings: Settings, dir: PathBuf) -> App {
-        let start = if settings.loader {
-            Start::Loader
-        } else {
-            Start::Game
+        let start = match settings.begin {
+            Begin::Boot | Begin::Loader => Start::Loader,
+            Begin::Game => Start::Game,
         };
+        let boot = (settings.begin == Begin::Boot).then(|| (BootPlayer::new(data), Instant::now()));
         let game = Game::new(
             data,
             Options {
@@ -68,6 +72,7 @@ impl App {
             page: TextPage::default(),
             editor: LineEditor::new(),
             instructions: None,
+            boot,
             title_until: None,
             saves_seen: 0,
             screen: vec![[0; 3]; render::W * render::H],
@@ -77,8 +82,40 @@ impl App {
             blink_from: Instant::now(),
         };
         app.load_slot();
-        app.pump();
+        if app.boot.is_none() {
+            app.pump();
+        }
         app
+    }
+
+    /// Play the boot timeline up to now; when it reaches the loader, the loader takes over
+    /// the text page as the boot left it.
+    fn tick_boot(&mut self) {
+        let Some((player, since)) = &mut self.boot else {
+            return;
+        };
+        let ms = since.elapsed().as_secs_f64() * 1000.0;
+        if player.advance(ms, &mut self.page) == boot::State::Loader {
+            self.boot = None;
+            self.pump();
+        }
+    }
+
+    /// A key while the boot plays: Esc skips it all; GET's key goes on to the loader; any
+    /// other key skips ahead to the notice GET waits on.
+    fn boot_key(&mut self, escape: bool) {
+        let Some((player, since)) = &mut self.boot else {
+            return;
+        };
+        if !matches!(player.state(), boot::State::Key(..)) {
+            player.skip_to_key(&mut self.page);
+            if !escape {
+                return;
+            }
+        }
+        player.key_pressed();
+        *since = Instant::now();
+        self.tick_boot();
     }
 
     fn slot_path(&self) -> PathBuf {
@@ -150,11 +187,23 @@ impl App {
     }
 
     fn redraw(&mut self) {
+        self.tick_boot();
         let now = Instant::now();
         let lit = ((now - self.blink_from).as_millis() / BLINK.as_millis()).is_multiple_of(2);
         let screen = self.game.screen();
         let (mut pixels, mut groups) = (screen.pixels(), screen.colour_bits());
-        let (view, page, cursor) = if self.title_until.is_some() {
+        let (view, page, cursor) = if let Some((player, _)) = &self.boot {
+            if player.text {
+                let cursor = match player.state() {
+                    boot::State::Key(r, c) if lit => Some((r, c)),
+                    _ => None,
+                };
+                (View::Text, self.page.clone(), cursor)
+            } else {
+                (pixels, groups) = (&player.pixels[..], &player.colour_bits[..]);
+                (View::Graphics, TextPage::default(), None)
+            }
+        } else if self.title_until.is_some() {
             let t = &self.data.title_1980;
             (pixels, groups) = (&t.pixels[..], &t.colour_bits[..]);
             (View::Graphics, TextPage::default(), None)
@@ -257,6 +306,10 @@ impl App {
                 }
                 _ => {}
             }
+            return;
+        }
+        if self.boot.is_some() {
+            self.boot_key(event.logical_key == Key::Named(NamedKey::Escape));
             return;
         }
         let Some(prompt) = self.game.waiting() else {
@@ -362,6 +415,13 @@ impl ApplicationHandler for App {
         if let Some(t) = self.title_until {
             next = next.min(t);
         }
+        if self
+            .boot
+            .as_ref()
+            .is_some_and(|(p, _)| p.state() == boot::State::Running)
+        {
+            next = next.min(now + Duration::from_millis(16));
+        }
         el.set_control_flow(ControlFlow::WaitUntil(next));
     }
 }
@@ -406,7 +466,6 @@ mod tests {
         let json = include_str!("../../../decomp/gamedata.json");
         let data: &'static GameData = Box::leak(Box::new(GameData::from_json(json).unwrap()));
         let dir = std::env::temp_dir().join(format!("mh-snap-{}", std::process::id()));
-        let mut app = App::new(data, Settings::default(), dir);
         let shot = |app: &mut App, name: &str, colour: Colour| {
             app.settings.colour = colour;
             app.blink_from = Instant::now();
@@ -414,6 +473,28 @@ mod tests {
             let bytes: Vec<u8> = app.screen.iter().flatten().copied().collect();
             std::fs::write(out.join(format!("{name}.rgb")), bytes).unwrap();
         };
+        // The boot, at moments of its timeline.
+        let mut app = App::new(data, Settings::default(), dir.clone());
+        for (ms, name) in [
+            (1500, "hello_slide"),
+            (4000, "hello_address"),
+            (6500, "hello_credits"),
+            (13500, "title_loading"),
+        ] {
+            app.boot.as_mut().unwrap().1 = Instant::now() - Duration::from_millis(ms);
+            shot(&mut app, name, Colour::White);
+        }
+        app.boot_key(false);
+        shot(&mut app, "notice", Colour::White);
+        app.boot_key(false);
+        assert!(app.boot.is_none());
+        shot(&mut app, "loader_after_boot", Colour::White);
+
+        let settings = Settings {
+            begin: Begin::Loader,
+            ..Settings::default()
+        };
+        let mut app = App::new(data, settings, dir);
         shot(&mut app, "loader", Colour::White);
         app.editor.insert("G");
         let (l, p) = app.editor.enter(false);

@@ -14,7 +14,7 @@ mod data;
 pub mod savefile;
 mod screen;
 
-pub use data::{Action, Condition, GameData, Rule, Title};
+pub use data::{Action, Boot, BootStep, Condition, GameData, Rule, Title};
 pub use screen::{Screen, HEIGHT, PICTURE_HEIGHT, WIDTH};
 
 use data::{ANY, CARRIED, OFIXED, OMOVED};

@@ -11909,6 +11909,1075 @@
    ]
   }
  },
+ "boot": [
+  {
+   "at": 0.0,
+   "display": "text"
+  },
+  {
+   "at": 0.0,
+   "row": 6,
+   "col": 7,
+   "text": "E",
+   "char_ms": 0
+  },
+  {
+   "at": 12.95,
+   "row": 6,
+   "col": 7,
+   "text": "GE",
+   "char_ms": 5.924
+  },
+  {
+   "at": 31.82,
+   "row": 6,
+   "col": 7,
+   "text": "NGE",
+   "char_ms": 5.924
+  },
+  {
+   "at": 56.62,
+   "row": 6,
+   "col": 7,
+   "text": "ANGE",
+   "char_ms": 5.924
+  },
+  {
+   "at": 87.34,
+   "row": 6,
+   "col": 7,
+   "text": "HANGE",
+   "char_ms": 5.924
+  },
+  {
+   "at": 123.98,
+   "row": 6,
+   "col": 7,
+   "text": "CHANGE",
+   "char_ms": 5.924
+  },
+  {
+   "at": 166.55,
+   "row": 6,
+   "col": 7,
+   "text": "XCHANGE",
+   "char_ms": 5.924
+  },
+  {
+   "at": 215.04,
+   "row": 6,
+   "col": 7,
+   "text": "EXCHANGE",
+   "char_ms": 5.924
+  },
+  {
+   "at": 269.46,
+   "row": 6,
+   "col": 7,
+   "text": " EXCHANGE",
+   "char_ms": 5.924
+  },
+  {
+   "at": 329.8,
+   "row": 6,
+   "col": 7,
+   "text": "N EXCHANGE",
+   "char_ms": 5.924
+  },
+  {
+   "at": 396.06,
+   "row": 6,
+   "col": 7,
+   "text": "IN EXCHANGE",
+   "char_ms": 5.924
+  },
+  {
+   "at": 468.25,
+   "row": 6,
+   "col": 7,
+   "text": "AIN EXCHANGE",
+   "char_ms": 5.924
+  },
+  {
+   "at": 546.36,
+   "row": 6,
+   "col": 7,
+   "text": "MAIN EXCHANGE",
+   "char_ms": 5.924
+  },
+  {
+   "at": 630.4,
+   "row": 6,
+   "col": 7,
+   "text": "OMAIN EXCHANGE",
+   "char_ms": 5.924
+  },
+  {
+   "at": 720.36,
+   "row": 6,
+   "col": 7,
+   "text": "DOMAIN EXCHANGE",
+   "char_ms": 5.924
+  },
+  {
+   "at": 816.24,
+   "row": 6,
+   "col": 7,
+   "text": " DOMAIN EXCHANGE",
+   "char_ms": 5.924
+  },
+  {
+   "at": 918.05,
+   "row": 6,
+   "col": 7,
+   "text": "C DOMAIN EXCHANGE",
+   "char_ms": 5.924
+  },
+  {
+   "at": 1025.78,
+   "row": 6,
+   "col": 7,
+   "text": "IC DOMAIN EXCHANGE",
+   "char_ms": 5.924
+  },
+  {
+   "at": 1139.44,
+   "row": 6,
+   "col": 7,
+   "text": "LIC DOMAIN EXCHANGE",
+   "char_ms": 5.924
+  },
+  {
+   "at": 1259.02,
+   "row": 6,
+   "col": 7,
+   "text": "BLIC DOMAIN EXCHANGE",
+   "char_ms": 5.924
+  },
+  {
+   "at": 1384.52,
+   "row": 6,
+   "col": 7,
+   "text": "UBLIC DOMAIN EXCHANGE",
+   "char_ms": 5.924
+  },
+  {
+   "at": 1515.95,
+   "row": 6,
+   "col": 7,
+   "text": "PUBLIC DOMAIN EXCHANGE",
+   "char_ms": 5.924
+  },
+  {
+   "at": 1653.3,
+   "row": 6,
+   "col": 7,
+   "text": " PUBLIC DOMAIN EXCHANGE",
+   "char_ms": 5.924
+  },
+  {
+   "at": 1796.58,
+   "row": 6,
+   "col": 7,
+   "text": "E PUBLIC DOMAIN EXCHANGE",
+   "char_ms": 5.924
+  },
+  {
+   "at": 1945.78,
+   "row": 6,
+   "col": 7,
+   "text": "HE PUBLIC DOMAIN EXCHANGE",
+   "char_ms": 5.924
+  },
+  {
+   "at": 2100.9,
+   "row": 6,
+   "col": 7,
+   "text": "THE PUBLIC DOMAIN EXCHANGE",
+   "char_ms": 5.924
+  },
+  {
+   "at": 2262.32,
+   "row": 21,
+   "col": 12,
+   "text": "2074C WALSH AVE.",
+   "char_ms": 0.184
+  },
+  {
+   "at": 2265.44,
+   "row": 22,
+   "col": 10,
+   "text": "SANTA CLARA, CA 95050",
+   "char_ms": 0.184
+  },
+  {
+   "at": 2269.31,
+   "row": 21,
+   "col": 30,
+   "text": "0",
+   "char_ms": 0
+  },
+  {
+   "at": 2269.31,
+   "row": 21,
+   "col": 29,
+   "text": "5",
+   "char_ms": 0
+  },
+  {
+   "at": 2269.31,
+   "row": 21,
+   "col": 28,
+   "text": "0",
+   "char_ms": 0
+  },
+  {
+   "at": 2269.31,
+   "row": 21,
+   "col": 27,
+   "text": "5",
+   "char_ms": 0
+  },
+  {
+   "at": 2269.31,
+   "row": 21,
+   "col": 26,
+   "text": "9",
+   "char_ms": 0
+  },
+  {
+   "at": 2269.31,
+   "row": 21,
+   "col": 25,
+   "text": " ",
+   "char_ms": 0
+  },
+  {
+   "at": 2269.31,
+   "row": 21,
+   "col": 23,
+   "text": "C",
+   "char_ms": 0
+  },
+  {
+   "at": 2269.31,
+   "row": 21,
+   "col": 22,
+   "text": " ",
+   "char_ms": 0
+  },
+  {
+   "at": 2269.31,
+   "row": 21,
+   "col": 21,
+   "text": ",",
+   "char_ms": 0
+  },
+  {
+   "at": 2269.31,
+   "row": 21,
+   "col": 20,
+   "text": "A",
+   "char_ms": 0
+  },
+  {
+   "at": 2269.31,
+   "row": 21,
+   "col": 19,
+   "text": "R",
+   "char_ms": 0
+  },
+  {
+   "at": 2269.31,
+   "row": 21,
+   "col": 18,
+   "text": "A",
+   "char_ms": 0
+  },
+  {
+   "at": 2269.31,
+   "row": 21,
+   "col": 17,
+   "text": "L",
+   "char_ms": 0
+  },
+  {
+   "at": 2269.31,
+   "row": 21,
+   "col": 15,
+   "text": " ",
+   "char_ms": 0
+  },
+  {
+   "at": 2269.31,
+   "row": 21,
+   "col": 14,
+   "text": "A",
+   "char_ms": 0
+  },
+  {
+   "at": 2269.31,
+   "row": 21,
+   "col": 13,
+   "text": "T",
+   "char_ms": 0
+  },
+  {
+   "at": 2269.31,
+   "row": 21,
+   "col": 12,
+   "text": "N",
+   "char_ms": 0
+  },
+  {
+   "at": 2269.31,
+   "row": 21,
+   "col": 11,
+   "text": "A",
+   "char_ms": 0
+  },
+  {
+   "at": 2269.31,
+   "row": 21,
+   "col": 10,
+   "text": "S",
+   "char_ms": 0
+  },
+  {
+   "at": 2269.31,
+   "row": 22,
+   "col": 10,
+   "text": "                              ",
+   "char_ms": 0.0
+  },
+  {
+   "at": 2369.59,
+   "row": 21,
+   "col": 10,
+   "text": "                              ",
+   "char_ms": 0.0
+  },
+  {
+   "at": 2369.96,
+   "row": 20,
+   "col": 12,
+   "text": "2074C WALSH AVE.",
+   "char_ms": 0.184
+  },
+  {
+   "at": 2373.09,
+   "row": 21,
+   "col": 10,
+   "text": "SANTA CLARA, CA 95050",
+   "char_ms": 0.184
+  },
+  {
+   "at": 2477.24,
+   "row": 20,
+   "col": 12,
+   "text": "                            ",
+   "char_ms": 0.0
+  },
+  {
+   "at": 2477.24,
+   "row": 21,
+   "col": 10,
+   "text": "                              ",
+   "char_ms": 0.0
+  },
+  {
+   "at": 2477.6,
+   "row": 19,
+   "col": 12,
+   "text": "2074C WALSH AVE.",
+   "char_ms": 0.184
+  },
+  {
+   "at": 2480.73,
+   "row": 20,
+   "col": 10,
+   "text": "SANTA CLARA, CA 95050",
+   "char_ms": 0.184
+  },
+  {
+   "at": 2584.88,
+   "row": 19,
+   "col": 12,
+   "text": "                            ",
+   "char_ms": 0.0
+  },
+  {
+   "at": 2584.88,
+   "row": 20,
+   "col": 10,
+   "text": "                              ",
+   "char_ms": 0.0
+  },
+  {
+   "at": 2585.25,
+   "row": 18,
+   "col": 12,
+   "text": "2074C WALSH AVE.",
+   "char_ms": 0.184
+  },
+  {
+   "at": 2588.38,
+   "row": 19,
+   "col": 10,
+   "text": "SANTA CLARA, CA 95050",
+   "char_ms": 0.184
+  },
+  {
+   "at": 2692.52,
+   "row": 18,
+   "col": 12,
+   "text": "                            ",
+   "char_ms": 0.0
+  },
+  {
+   "at": 2692.52,
+   "row": 19,
+   "col": 10,
+   "text": "                              ",
+   "char_ms": 0.0
+  },
+  {
+   "at": 2692.89,
+   "row": 17,
+   "col": 12,
+   "text": "2074C WALSH AVE.",
+   "char_ms": 0.184
+  },
+  {
+   "at": 2696.02,
+   "row": 18,
+   "col": 10,
+   "text": "SANTA CLARA, CA 95050",
+   "char_ms": 0.184
+  },
+  {
+   "at": 2800.17,
+   "row": 17,
+   "col": 12,
+   "text": "                            ",
+   "char_ms": 0.0
+  },
+  {
+   "at": 2800.17,
+   "row": 18,
+   "col": 10,
+   "text": "                              ",
+   "char_ms": 0.0
+  },
+  {
+   "at": 2800.54,
+   "row": 16,
+   "col": 12,
+   "text": "2074C WALSH AVE.",
+   "char_ms": 0.184
+  },
+  {
+   "at": 2803.66,
+   "row": 17,
+   "col": 10,
+   "text": "SANTA CLARA, CA 95050",
+   "char_ms": 0.184
+  },
+  {
+   "at": 2907.81,
+   "row": 16,
+   "col": 12,
+   "text": "                            ",
+   "char_ms": 0.0
+  },
+  {
+   "at": 2907.81,
+   "row": 17,
+   "col": 10,
+   "text": "                              ",
+   "char_ms": 0.0
+  },
+  {
+   "at": 2908.18,
+   "row": 15,
+   "col": 12,
+   "text": "2074C WALSH AVE.",
+   "char_ms": 0.184
+  },
+  {
+   "at": 2911.31,
+   "row": 16,
+   "col": 10,
+   "text": "SANTA CLARA, CA 95050",
+   "char_ms": 0.184
+  },
+  {
+   "at": 3015.46,
+   "row": 15,
+   "col": 12,
+   "text": "                            ",
+   "char_ms": 0.0
+  },
+  {
+   "at": 3015.46,
+   "row": 16,
+   "col": 10,
+   "text": "                              ",
+   "char_ms": 0.0
+  },
+  {
+   "at": 3015.82,
+   "row": 14,
+   "col": 12,
+   "text": "2074C WALSH AVE.",
+   "char_ms": 0.184
+  },
+  {
+   "at": 3018.95,
+   "row": 15,
+   "col": 10,
+   "text": "SANTA CLARA, CA 95050",
+   "char_ms": 0.184
+  },
+  {
+   "at": 3123.1,
+   "row": 14,
+   "col": 12,
+   "text": "                            ",
+   "char_ms": 0.0
+  },
+  {
+   "at": 3123.1,
+   "row": 15,
+   "col": 10,
+   "text": "                              ",
+   "char_ms": 0.0
+  },
+  {
+   "at": 3123.47,
+   "row": 13,
+   "col": 12,
+   "text": "2074C WALSH AVE.",
+   "char_ms": 0.184
+  },
+  {
+   "at": 3126.6,
+   "row": 14,
+   "col": 10,
+   "text": "SANTA CLARA, CA 95050",
+   "char_ms": 0.184
+  },
+  {
+   "at": 3230.74,
+   "row": 13,
+   "col": 12,
+   "text": "                            ",
+   "char_ms": 0.0
+  },
+  {
+   "at": 3230.74,
+   "row": 14,
+   "col": 10,
+   "text": "                              ",
+   "char_ms": 0.0
+  },
+  {
+   "at": 3231.11,
+   "row": 12,
+   "col": 12,
+   "text": "2074C WALSH AVE.",
+   "char_ms": 0.184
+  },
+  {
+   "at": 3234.24,
+   "row": 13,
+   "col": 10,
+   "text": "SANTA CLARA, CA 95050",
+   "char_ms": 0.184
+  },
+  {
+   "at": 3338.39,
+   "row": 12,
+   "col": 12,
+   "text": "                            ",
+   "char_ms": 0.0
+  },
+  {
+   "at": 3338.39,
+   "row": 13,
+   "col": 10,
+   "text": "                              ",
+   "char_ms": 0.0
+  },
+  {
+   "at": 3338.76,
+   "row": 11,
+   "col": 12,
+   "text": "2074C WALSH AVE.",
+   "char_ms": 0.184
+  },
+  {
+   "at": 3341.88,
+   "row": 12,
+   "col": 10,
+   "text": "SANTA CLARA, CA 95050",
+   "char_ms": 0.184
+  },
+  {
+   "at": 3446.03,
+   "row": 11,
+   "col": 12,
+   "text": "                            ",
+   "char_ms": 0.0
+  },
+  {
+   "at": 3446.03,
+   "row": 12,
+   "col": 10,
+   "text": "                              ",
+   "char_ms": 0.0
+  },
+  {
+   "at": 3446.4,
+   "row": 10,
+   "col": 12,
+   "text": "2074C WALSH AVE.",
+   "char_ms": 0.184
+  },
+  {
+   "at": 3449.53,
+   "row": 11,
+   "col": 10,
+   "text": "SANTA CLARA, CA 95050",
+   "char_ms": 0.184
+  },
+  {
+   "at": 3553.68,
+   "row": 10,
+   "col": 12,
+   "text": "                            ",
+   "char_ms": 0.0
+  },
+  {
+   "at": 3553.68,
+   "row": 11,
+   "col": 10,
+   "text": "                              ",
+   "char_ms": 0.0
+  },
+  {
+   "at": 3554.04,
+   "row": 9,
+   "col": 12,
+   "text": "2074C WALSH AVE.",
+   "char_ms": 0.184
+  },
+  {
+   "at": 3557.17,
+   "row": 10,
+   "col": 10,
+   "text": "SANTA CLARA, CA 95050",
+   "char_ms": 0.184
+  },
+  {
+   "at": 3661.32,
+   "row": 9,
+   "col": 12,
+   "text": "                            ",
+   "char_ms": 0.0
+  },
+  {
+   "at": 3661.32,
+   "row": 10,
+   "col": 10,
+   "text": "                              ",
+   "char_ms": 0.0
+  },
+  {
+   "at": 3661.69,
+   "row": 8,
+   "col": 12,
+   "text": "2074C WALSH AVE.",
+   "char_ms": 0.184
+  },
+  {
+   "at": 3664.82,
+   "row": 9,
+   "col": 10,
+   "text": "SANTA CLARA, CA 95050",
+   "char_ms": 0.184
+  },
+  {
+   "at": 3768.96,
+   "row": 10,
+   "col": 37,
+   "text": "( ",
+   "char_ms": 5.924
+  },
+  {
+   "at": 3787.84,
+   "row": 10,
+   "col": 36,
+   "text": "(4 ",
+   "char_ms": 5.924
+  },
+  {
+   "at": 3812.63,
+   "row": 10,
+   "col": 35,
+   "text": "(40 ",
+   "char_ms": 5.924
+  },
+  {
+   "at": 3843.35,
+   "row": 10,
+   "col": 34,
+   "text": "(408 ",
+   "char_ms": 5.924
+  },
+  {
+   "at": 3880.0,
+   "row": 10,
+   "col": 33,
+   "text": "(408) ",
+   "char_ms": 5.924
+  },
+  {
+   "at": 3922.56,
+   "row": 10,
+   "col": 32,
+   "text": "(408)  ",
+   "char_ms": 5.924
+  },
+  {
+   "at": 3971.06,
+   "row": 10,
+   "col": 31,
+   "text": "(408) 4 ",
+   "char_ms": 5.924
+  },
+  {
+   "at": 4025.47,
+   "row": 10,
+   "col": 30,
+   "text": "(408) 49 ",
+   "char_ms": 5.924
+  },
+  {
+   "at": 4085.81,
+   "row": 10,
+   "col": 29,
+   "text": "(408) 496 ",
+   "char_ms": 5.924
+  },
+  {
+   "at": 4152.08,
+   "row": 10,
+   "col": 28,
+   "text": "(408) 496- ",
+   "char_ms": 5.924
+  },
+  {
+   "at": 4224.26,
+   "row": 10,
+   "col": 27,
+   "text": "(408) 496-0 ",
+   "char_ms": 5.924
+  },
+  {
+   "at": 4302.38,
+   "row": 10,
+   "col": 26,
+   "text": "(408) 496-06 ",
+   "char_ms": 5.924
+  },
+  {
+   "at": 4386.41,
+   "row": 10,
+   "col": 25,
+   "text": "(408) 496-062 ",
+   "char_ms": 5.924
+  },
+  {
+   "at": 4476.37,
+   "row": 10,
+   "col": 24,
+   "text": "(408) 496-0624 ",
+   "char_ms": 5.924
+  },
+  {
+   "at": 4572.26,
+   "row": 10,
+   "col": 23,
+   "text": "(408) 496-0624 ",
+   "char_ms": 5.924
+  },
+  {
+   "at": 4668.14,
+   "row": 10,
+   "col": 22,
+   "text": "(408) 496-0624 ",
+   "char_ms": 5.924
+  },
+  {
+   "at": 4764.02,
+   "row": 10,
+   "col": 21,
+   "text": "(408) 496-0624 ",
+   "char_ms": 5.924
+  },
+  {
+   "at": 4859.91,
+   "row": 10,
+   "col": 20,
+   "text": "(408) 496-0624 ",
+   "char_ms": 5.924
+  },
+  {
+   "at": 4955.79,
+   "row": 10,
+   "col": 19,
+   "text": "(408) 496-0624 ",
+   "char_ms": 5.924
+  },
+  {
+   "at": 5051.68,
+   "row": 10,
+   "col": 18,
+   "text": "(408) 496-0624 ",
+   "char_ms": 5.924
+  },
+  {
+   "at": 5147.56,
+   "row": 10,
+   "col": 17,
+   "text": "(408) 496-0624 ",
+   "char_ms": 5.924
+  },
+  {
+   "at": 5243.44,
+   "row": 10,
+   "col": 16,
+   "text": "(408) 496-0624 ",
+   "char_ms": 5.924
+  },
+  {
+   "at": 5339.33,
+   "row": 10,
+   "col": 15,
+   "text": "(408) 496-0624 ",
+   "char_ms": 5.924
+  },
+  {
+   "at": 5435.21,
+   "row": 10,
+   "col": 14,
+   "text": "(408) 496-0624 ",
+   "char_ms": 5.924
+  },
+  {
+   "at": 5531.1,
+   "row": 10,
+   "col": 13,
+   "text": "(408) 496-0624 ",
+   "char_ms": 5.924
+  },
+  {
+   "at": 5626.98,
+   "row": 10,
+   "col": 12,
+   "text": "(408) 496-0624 ",
+   "char_ms": 5.924
+  },
+  {
+   "at": 6822.86,
+   "row": 6,
+   "col": 7,
+   "text": "                                 ",
+   "char_ms": 0.0
+  },
+  {
+   "at": 6822.86,
+   "row": 8,
+   "col": 12,
+   "text": "                            ",
+   "char_ms": 0.0
+  },
+  {
+   "at": 6822.86,
+   "row": 9,
+   "col": 10,
+   "text": "                              ",
+   "char_ms": 0.0
+  },
+  {
+   "at": 6822.86,
+   "row": 10,
+   "col": 12,
+   "text": "                            ",
+   "char_ms": 0.0
+  },
+  {
+   "at": 6822.86,
+   "hgr": true
+  },
+  {
+   "at": 6822.86,
+   "display": "graphics"
+  },
+  {
+   "at": 10102.06,
+   "title": "1987",
+   "ms": 6553.6
+  },
+  {
+   "at": 22155.66,
+   "display": "text"
+  },
+  {
+   "at": 22156.58,
+   "row": 0,
+   "col": 5,
+   "text": "FROM A GREAT MOMENT IN HISTORY:    ",
+   "char_ms": 0.184
+  },
+  {
+   "at": 22163.02,
+   "row": 1,
+   "col": 0,
+   "text": "MYSTERY HOUSE, THE FIRST GRAPHIC        ",
+   "char_ms": 0.184
+  },
+  {
+   "at": 22170.38,
+   "row": 2,
+   "col": 0,
+   "text": "ADVENTURE, WAS CREATED IN 1980 BY SIERRA",
+   "char_ms": 0.184
+  },
+  {
+   "at": 22177.74,
+   "row": 3,
+   "col": 0,
+   "text": "ON-LINE FOUNDERS KEN AND ROBERTA        ",
+   "char_ms": 0.184
+  },
+  {
+   "at": 22185.1,
+   "row": 4,
+   "col": 0,
+   "text": "WILLIAMS, AND RELEASED INTO THE PUBLIC",
+   "char_ms": 0.184
+  },
+  {
+   "at": 22192.28,
+   "row": 5,
+   "col": 0,
+   "text": "DOMAIN IN 1987 TO CELEBRATE SIERRA'S    ",
+   "char_ms": 0.184
+  },
+  {
+   "at": 22199.64,
+   "row": 6,
+   "col": 0,
+   "text": "7TH ANNIVERSARY.",
+   "char_ms": 0.184
+  },
+  {
+   "at": 22203.69,
+   "row": 8,
+   "col": 4,
+   "text": "WE ENCOURAGE YOU TO COPY THIS GAME, ",
+   "char_ms": 0.184
+  },
+  {
+   "at": 22210.31,
+   "row": 9,
+   "col": 0,
+   "text": "FOR YOURSELF OR TO SHARE. IF YOU HAVE   ",
+   "char_ms": 0.184
+  },
+  {
+   "at": 22217.67,
+   "row": 10,
+   "col": 0,
+   "text": "ENJOYED IT YOU MAY SEND A $5 DONATION TO",
+   "char_ms": 0.184
+  },
+  {
+   "at": 22225.03,
+   "row": 11,
+   "col": 0,
+   "text": "KEN AND ROBERTA'S FAVORITE CHARITY,     ",
+   "char_ms": 0.184
+  },
+  {
+   "at": 22232.39,
+   "row": 12,
+   "col": 0,
+   "text": "SIERRA HISTORIC SITES ASSOCIATION, P.O. ",
+   "char_ms": 0.184
+  },
+  {
+   "at": 22239.75,
+   "row": 13,
+   "col": 0,
+   "text": "BOX 451, OAKHURST CA 93644",
+   "char_ms": 0.184
+  },
+  {
+   "at": 22244.9,
+   "row": 15,
+   "col": 0,
+   "text": "NOTE: BECAUSE IT IS NOW FREE, SIERRA'S  ",
+   "char_ms": 0.184
+  },
+  {
+   "at": 22252.26,
+   "row": 16,
+   "col": 0,
+   "text": "GIFT TO YOU, WE CAN NO LONGER TAKE CALLS",
+   "char_ms": 0.184
+  },
+  {
+   "at": 22259.62,
+   "row": 17,
+   "col": 0,
+   "text": "ON THIS GAME. IF YOU NEED HELP, WE SUG- ",
+   "char_ms": 0.184
+  },
+  {
+   "at": 22266.98,
+   "row": 18,
+   "col": 0,
+   "text": "GEST YOU CONTACT YOUR LOCAL APPLE USERS ",
+   "char_ms": 0.184
+  },
+  {
+   "at": 22274.34,
+   "row": 19,
+   "col": 0,
+   "text": "GROUP TO TALK WITH OTHERS WHO MAY HAVE  ",
+   "char_ms": 0.184
+  },
+  {
+   "at": 22281.7,
+   "row": 20,
+   "col": 0,
+   "text": "PLAYED IT.",
+   "char_ms": 0.184
+  },
+  {
+   "at": 22283.73,
+   "key": true,
+   "row": 21,
+   "col": 0
+  },
+  {
+   "at": 0.0,
+   "loader": true
+  }
+ ],
  "addresses": {
   "CMD_RULES": 17664,
   "CURONO": 2130,

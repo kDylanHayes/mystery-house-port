@@ -33,6 +33,19 @@ impl TextPage {
         (self.row, self.col)
     }
 
+    /// A character at (row, col), the cursor staying where it is.
+    pub fn put_at(&mut self, row: usize, col: usize, c: char) {
+        self.cells[row * COLS + col] = if c.is_ascii() {
+            c.to_ascii_uppercase() as u8
+        } else {
+            b'?'
+        };
+    }
+
+    pub fn set_cursor(&mut self, row: usize, col: usize) {
+        (self.row, self.col) = (row, col);
+    }
+
     /// HOME: clear the page, cursor at the top left.
     pub fn home(&mut self) {
         self.cells.fill(b' ');

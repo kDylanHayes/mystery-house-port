@@ -35,6 +35,37 @@ pub struct GameData {
     pub title_1980: Title,
     /// Where the game keeps things in memory (`CURONO`, `OBJBASE`, ...), for its save files.
     pub addresses: HashMap<String, u16>,
+    /// What HELLO and MYSTERY.HELLO show before the loader, as a timeline.
+    pub boot: Vec<BootStep>,
+}
+
+/// A step of the boot timeline (decomp/PORTING.md, "Before the game"): `at` is milliseconds
+/// since the start or since the last key.
+#[derive(Clone, Debug, PartialEq)]
+pub struct BootStep {
+    pub at: f64,
+    pub what: Boot,
+}
+
+#[derive(Clone, Debug, PartialEq)]
+pub enum Boot {
+    /// The screen shows the text page (`true`) or hi-res page 1 full screen.
+    Display { text: bool },
+    /// Hi-res page 1 cleared to black.
+    Hgr,
+    /// Text written from (row, col) rightwards, a character every `char_ms`.
+    Text {
+        row: usize,
+        col: usize,
+        text: String,
+        char_ms: f64,
+    },
+    /// The 1987 title arriving in hi-res page 1, in memory order, over `ms`.
+    Title { ms: f64 },
+    /// Wait for a key, the cursor flashing at (row, col).
+    Key { row: usize, col: usize },
+    /// Start the loader.
+    Loader,
 }
 
 pub struct Room {
@@ -184,6 +215,55 @@ mod json {
         loader: Loader,
         titles: HashMap<String, Title>,
         addresses: HashMap<String, u16>,
+        boot: Vec<BootStep>,
+    }
+
+    #[derive(Deserialize)]
+    struct BootStep {
+        at: f64,
+        display: Option<String>,
+        hgr: Option<bool>,
+        row: Option<usize>,
+        col: Option<usize>,
+        text: Option<String>,
+        char_ms: Option<f64>,
+        title: Option<String>,
+        ms: Option<f64>,
+        key: Option<bool>,
+        loader: Option<bool>,
+    }
+
+    fn boot_step(s: BootStep) -> Result<super::BootStep, String> {
+        use super::Boot;
+        let pos = || s.row.zip(s.col).ok_or("a boot step needs row and col");
+        let what = if let Some(d) = &s.display {
+            Boot::Display { text: d == "text" }
+        } else if s.hgr == Some(true) {
+            Boot::Hgr
+        } else if let Some(text) = &s.text {
+            let (row, col) = pos()?;
+            if row >= 24 || col + text.len() > 40 {
+                return Err(format!("boot text off the screen at {row},{col}"));
+            }
+            Boot::Text {
+                row,
+                col,
+                text: text.clone(),
+                char_ms: s.char_ms.unwrap_or(0.0),
+            }
+        } else if s.title.is_some() {
+            Boot::Title {
+                ms: s.ms.unwrap_or(0.0),
+            }
+        } else if s.key == Some(true) {
+            let (row, col) = pos()?;
+            Boot::Key { row, col }
+        } else if s.loader == Some(true) {
+            Boot::Loader
+        } else {
+            return Err(format!("unknown boot step at {} ms", s.at));
+        };
+        Ok(super::BootStep { at: s.at, what })
     }
 
     #[derive(Deserialize)]
@@ -484,6 +564,11 @@ mod json {
                 title_1987: title(&self.titles, "1987")?,
                 title_1980: title(&self.titles, "1980")?,
                 addresses: self.addresses,
+                boot: self
+                    .boot
+                    .into_iter()
+                    .map(boot_step)
+                    .collect::<Result<_, _>>()?,
             })
         }
     }

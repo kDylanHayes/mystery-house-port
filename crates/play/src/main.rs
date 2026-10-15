@@ -55,7 +55,7 @@ fn main() -> ExitCode {
             println!("{line}");
         }
         if args.iter().any(|a| a == "--pixels") {
-            for (_, hash) in &rec.prompts {
+            for hash in &rec.pixel_hashes {
                 println!("{hash}");
             }
         }

@@ -284,14 +284,6 @@ impl<'a> Game<'a> {
         std::mem::take(&mut self.title_1980)
     }
 
-    pub fn data(&self) -> &'a GameData {
-        self.data
-    }
-
-    pub fn options(&self) -> Options {
-        self.options
-    }
-
     pub fn state(&self) -> &State {
         &self.state
     }

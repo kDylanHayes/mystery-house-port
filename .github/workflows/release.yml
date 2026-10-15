@@ -1,6 +1,6 @@
 # Builds the game for macOS (one app for Apple silicon and Intel), Windows and Linux. Pushing a
-# tag v* publishes them as a GitHub release; running the workflow by hand only builds them (the
-# packages are kept as the run's artifacts).
+# tag v* publishes them as a GitHub release; running the workflow by hand builds and collects
+# them without publishing (the packages are kept as the run's artifacts).
 name: release
 
 on:
@@ -76,7 +76,7 @@ jobs:
           cp target/release/mystery-house README.md LICENSE "dist/${{ steps.version.outputs.package }}/"
           tar -C dist -czf "${{ steps.version.outputs.package }}.tar.gz" "${{ steps.version.outputs.package }}"
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.name }}
           path: |
@@ -85,16 +85,19 @@ jobs:
           if-no-files-found: error
 
   publish:
-    if: startsWith(github.ref, 'refs/tags/v')
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           path: packages
           merge-multiple: true
 
+      - name: The three packages
+        run: ls -l packages && test "$(ls packages | wc -l)" -eq 3
+
       - name: The release, with the three packages
+        if: startsWith(github.ref, 'refs/tags/v')
         env:
           GH_TOKEN: ${{ github.token }}
         run: |

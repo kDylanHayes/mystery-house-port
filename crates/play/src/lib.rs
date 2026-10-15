@@ -5,7 +5,7 @@ use std::fmt::Write as _;
 use std::fs;
 use std::path::{Path, PathBuf};
 
-use mystery_house::{savefile, Game, GameData, Options, Output, Prompt, Screen, Start};
+use mystery_house::{savefile, Game, GameData, Options, Output, Screen, Start};
 use sha2::{Digest, Sha256};
 
 /// The scripts, where each starts and which expected files it is compared with.
@@ -135,10 +135,10 @@ impl Transcript {
     }
 }
 
-/// What a script produced: the transcript, and the pixel hash and kind of every prompt.
+/// What a script produced: the transcript, and the pixel hash at every prompt.
 pub struct Recording {
     pub transcript: Vec<String>,
-    pub prompts: Vec<(Prompt, String)>,
+    pub pixel_hashes: Vec<String>,
     /// Why the play stopped.
     pub stopped: String,
     /// The save file at the end, in the original's format.
@@ -163,17 +163,17 @@ pub fn play_from(
         game.set_saved_game(state);
     }
     let mut t = Transcript::default();
-    let mut prompts = Vec::new();
+    let mut pixel_hashes = Vec::new();
     let mut commands = commands.iter();
     let stopped = loop {
         for out in game.take_output() {
             t.output(out);
         }
-        let Some(prompt) = game.waiting() else {
+        if game.waiting().is_none() {
             break "the game ended".to_string();
-        };
+        }
         t.flush();
-        prompts.push((prompt, pixel_hash(game.screen())));
+        pixel_hashes.push(pixel_hash(game.screen()));
         let Some(cmd) = commands.next() else {
             break "end of commands".to_string();
         };
@@ -185,7 +185,7 @@ pub fn play_from(
     let saved_game = savefile::write(data, game.saved_game());
     Recording {
         transcript: t.lines,
-        prompts,
+        pixel_hashes,
         stopped,
         saved_game,
     }
@@ -256,20 +256,20 @@ fn compare_transcript(expected: &[&str], got: &[String]) -> Option<String> {
 
 fn compare_pixels(expected: &[&str], recording: &Recording) -> Option<String> {
     let mut bad = Vec::new();
-    for (i, (_, hash)) in recording.prompts.iter().enumerate() {
+    for (i, hash) in recording.pixel_hashes.iter().enumerate() {
         match expected.get(i) {
             Some(e) if e == hash => {}
             e => bad.push((i, e.copied().unwrap_or("(none)"), hash)),
         }
     }
-    let count = expected.len() != recording.prompts.len();
+    let count = expected.len() != recording.pixel_hashes.len();
     if bad.is_empty() && !count {
         return None;
     }
     let mut msg = format!(
         "pixel hashes: {} of {} prompts differ ({} expected)\n",
         bad.len(),
-        recording.prompts.len(),
+        recording.pixel_hashes.len(),
         expected.len()
     );
     for (i, e, g) in bad.iter().take(5) {

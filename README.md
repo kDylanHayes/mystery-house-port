@@ -11,6 +11,8 @@ window on macOS, Windows and Linux.
 
 ## Playing
 
+**Play it in your browser:** <https://kdylanhayes.github.io/mystery-house-port/>
+
 The [releases](https://github.com/kDylanHayes/mystery-house-port/releases) have the game ready
 to run:
 
@@ -120,7 +122,9 @@ fixes the decompilation documents may be offered as an option, checked by `bugfi
 
 Pushing a tag `v*` runs `.github/workflows/release.yml`: on macOS, Windows and Linux it runs the
 tests and builds the game (on macOS one app for both processors), builds the web package, and
-publishes the four packages as a GitHub release. Running the workflow by hand builds the packages without publishing them.
+publishes the four packages as a GitHub release, and deploys the web build to the GitHub Pages
+site. Running the workflow by hand builds the packages without publishing them (tick `pages` to
+deploy that build to the site too).
 
 ```bash
 git tag v1.0.1 && git push origin v1.0.1
